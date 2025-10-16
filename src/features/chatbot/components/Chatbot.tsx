@@ -15,7 +15,6 @@ import {
   Phone,
   Wrench,
   Car,
-  Tool,
   AlertTriangle
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";

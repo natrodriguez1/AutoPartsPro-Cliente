@@ -223,7 +223,7 @@ export function PanelTaller({ onCambiarVista, onAgregarCarrito, onVerPerfil, onI
                     <XAxis dataKey="mes" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="ventas" fill="#8884d8" />
+                    <Bar dataKey="ventas" fill="#212c5e" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
