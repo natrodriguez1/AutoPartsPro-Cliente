@@ -1,7 +1,7 @@
 import { Facebook, Twitter, Instagram, Mail, Car, Phone, MapPin } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Separator } from "../ui/separator";
+import { Button } from ".@/shared/ui/button";
+import { Input } from ".@/shared/ui/input";
+import { Separator } from ".@/shared/ui/separator";
 
 export function Footer() {
   return (

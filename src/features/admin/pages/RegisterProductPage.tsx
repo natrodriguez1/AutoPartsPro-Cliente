@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Checkbox } from "./ui/checkbox";
-import { Separator } from "./ui/separator";
-import { Badge } from "./ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Separator } from "@/shared/ui/separator";
+import { Badge } from "@/shared/ui/badge";
 import { 
   ArrowLeft, 
   Save, 
@@ -18,7 +18,7 @@ import {
   Tag,
   DollarSign
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface RegistroProductosProps {
   onRegresar: () => void;
@@ -173,7 +173,7 @@ export function RegistroProductos({ onRegresar, onCambiarVista }: RegistroProduc
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="categoria">Categoría *</Label>
-                    <Select value={producto.categoria} onValueChange={(value) => setProducto(prev => ({...prev, categoria: value}))}>
+                    <Select value={producto.categoria} onValueChange={(value: any) => setProducto(prev => ({...prev, categoria: value}))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona categoría" />
                       </SelectTrigger>
@@ -188,7 +188,7 @@ export function RegistroProductos({ onRegresar, onCambiarVista }: RegistroProduc
                   </div>
                   <div>
                     <Label htmlFor="marca">Marca *</Label>
-                    <Select value={producto.marca} onValueChange={(value) => setProducto(prev => ({...prev, marca: value}))}>
+                    <Select value={producto.marca} onValueChange={(value: any) => setProducto(prev => ({...prev, marca: value}))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona marca" />
                       </SelectTrigger>
@@ -292,7 +292,7 @@ export function RegistroProductos({ onRegresar, onCambiarVista }: RegistroProduc
 
                 <div>
                   <Label htmlFor="proveedor">Proveedor</Label>
-                  <Select value={producto.proveedor} onValueChange={(value) => setProducto(prev => ({...prev, proveedor: value}))}>
+                  <Select value={producto.proveedor} onValueChange={(value: any) => setProducto(prev => ({...prev, proveedor: value}))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona proveedor" />
                     </SelectTrigger>
@@ -397,7 +397,7 @@ export function RegistroProductos({ onRegresar, onCambiarVista }: RegistroProduc
                   <Checkbox
                     id="is-new"
                     checked={producto.isNew}
-                    onCheckedChange={(checked) => setProducto(prev => ({...prev, isNew: checked as boolean}))}
+                    onCheckedChange={(checked: any) => setProducto(prev => ({...prev, isNew: checked as boolean}))}
                   />
                   <Label htmlFor="is-new">Producto nuevo</Label>
                 </div>
@@ -407,7 +407,7 @@ export function RegistroProductos({ onRegresar, onCambiarVista }: RegistroProduc
                     <Checkbox
                       id="is-sale"
                       checked={producto.isSale}
-                      onCheckedChange={(checked) => setProducto(prev => ({...prev, isSale: checked as boolean}))}
+                      onCheckedChange={(checked: any) => setProducto(prev => ({...prev, isSale: checked as boolean}))}
                     />
                     <Label htmlFor="is-sale">En oferta</Label>
                   </div>

@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Checkbox } from "./ui/checkbox";
-import { Separator } from "./ui/separator";
-import { Badge } from "./ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Textarea } from "@/shared/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import { Checkbox } from "@/shared/ui/checkbox";
+import { Separator } from "@/shared/ui/separator";
+import { Badge } from "@/shared/ui/badge";
 import { 
   ArrowLeft, 
   Save, 
@@ -18,7 +18,7 @@ import {
   DollarSign,
   CheckCircle
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface RegistroServiciosProps {
   onRegresar: () => void;
@@ -177,7 +177,7 @@ export function RegistroServicios({ onRegresar, onCambiarVista }: RegistroServic
                   </div>
                   <div>
                     <Label htmlFor="categoria">Categoría *</Label>
-                    <Select value={servicio.categoria} onValueChange={(value) => setServicio(prev => ({...prev, categoria: value}))}>
+                    <Select value={servicio.categoria} onValueChange={(value: any) => setServicio(prev => ({...prev, categoria: value}))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona categoría" />
                       </SelectTrigger>
@@ -195,7 +195,7 @@ export function RegistroServicios({ onRegresar, onCambiarVista }: RegistroServic
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="especialidad">Especialidad</Label>
-                    <Select value={servicio.especialidad} onValueChange={(value) => setServicio(prev => ({...prev, especialidad: value}))}>
+                    <Select value={servicio.especialidad} onValueChange={(value: any) => setServicio(prev => ({...prev, especialidad: value}))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona especialidad" />
                       </SelectTrigger>
@@ -210,7 +210,7 @@ export function RegistroServicios({ onRegresar, onCambiarVista }: RegistroServic
                   </div>
                   <div>
                     <Label htmlFor="duracion">Duración estimada *</Label>
-                    <Select value={servicio.duracion} onValueChange={(value) => setServicio(prev => ({...prev, duracion: value}))}>
+                    <Select value={servicio.duracion} onValueChange={(value: any) => setServicio(prev => ({...prev, duracion: value}))}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona duración" />
                       </SelectTrigger>
@@ -412,7 +412,7 @@ export function RegistroServicios({ onRegresar, onCambiarVista }: RegistroServic
                   <Checkbox
                     id="is-promoted"
                     checked={servicio.isPromoted}
-                    onCheckedChange={(checked) => setServicio(prev => ({...prev, isPromoted: checked as boolean}))}
+                    onCheckedChange={(checked: any) => setServicio(prev => ({...prev, isPromoted: checked as boolean}))}
                   />
                   <Label htmlFor="is-promoted">Servicio promocionado</Label>
                 </div>
@@ -421,7 +421,7 @@ export function RegistroServicios({ onRegresar, onCambiarVista }: RegistroServic
                   <Checkbox
                     id="is-urgent"
                     checked={servicio.isUrgent}
-                    onCheckedChange={(checked) => setServicio(prev => ({...prev, isUrgent: checked as boolean}))}
+                    onCheckedChange={(checked: any) => setServicio(prev => ({...prev, isUrgent: checked as boolean}))}
                   />
                   <Label htmlFor="is-urgent">Servicio express</Label>
                 </div>
