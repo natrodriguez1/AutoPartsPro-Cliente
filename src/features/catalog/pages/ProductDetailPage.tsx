@@ -22,8 +22,8 @@ import {
   MessageCircle,
   Phone
 } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { toast } from "sonner";
 
 interface ProductDetailProps {
   product: any;
@@ -127,7 +127,7 @@ const reviewsDetalladas = [
   }
 ];
 
-export function ProductDetail({ 
+export function ProductDetailPage({ 
   product, 
   onRegresar, 
   onAgregarCarrito, 

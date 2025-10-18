@@ -46,7 +46,7 @@ interface PanelAdminProps {
   onCambiarVista: (vista: string) => void;
 }
 
-// Datos mock para el dashboard
+// TODO: llamada a estadisticas del taller (ganancia total, ganancias por mes, usuarios activos, talleres activos, transac totales, transac al mes y crecimiento mensual)
 const estadisticasGenerales = {
   gananciasTotal: 458750,
   gananciasMes: 67450,
@@ -56,7 +56,7 @@ const estadisticasGenerales = {
   transaccionesMes: 1890,
   crecimientoMensual: 12.5
 };
-
+//TODO: llama a top 5 productos más populares
 const productosPopulares = [
   { id: "1", nombre: "Pastillas de Freno Cerámicas", ventas: 245, ingresos: 29400, categoria: "Frenos" },
   { id: "2", nombre: "Aceite Motor Sintético Mobil 1", ventas: 189, ingresos: 8505, categoria: "Lubricantes" },
@@ -64,7 +64,7 @@ const productosPopulares = [
   { id: "4", nombre: "Amortiguadores Monroe", ventas: 134, ingresos: 18760, categoria: "Suspensión" },
   { id: "5", nombre: "Neumáticos Bridgestone", ventas: 98, ingresos: 17640, categoria: "Neumáticos" }
 ];
-
+//TODO: llamada a top 5 servicios más populares
 const serviciosPopulares = [
   { id: "1", nombre: "Cambio de Aceite Premium", solicitudes: 567, ingresos: 36855, promedio: 65 },
   { id: "2", nombre: "Diagnóstico Computarizado", solicitudes: 445, ingresos: 15575, promedio: 35 },
@@ -72,7 +72,7 @@ const serviciosPopulares = [
   { id: "4", nombre: "Alineación y Balanceado", solicitudes: 234, ingresos: 12870, promedio: 55 },
   { id: "5", nombre: "Revisión Pre-Viaje", solicitudes: 156, ingresos: 12480, promedio: 80 }
 ];
-
+//TODO: llamada a top 5 talleres con más ventas
 const talleresMasVentas = [
   { 
     id: "1", 
@@ -130,7 +130,7 @@ const talleresMasVentas = [
     distancia: "4.1 km del centro"
   }
 ];
-
+//TODO: llamada a usuarios registrados (?)
 const usuariosRegistrados = [
   { 
     id: "1", 
@@ -184,7 +184,7 @@ const usuariosRegistrados = [
   }
 ];
 
-export function PanelAdmin({ onCambiarVista }: PanelAdminProps) {
+export function AdminDashboard({ onCambiarVista }: PanelAdminProps) {
   const { usuario } = useAuth();
   const [tabActiva, setTabActiva] = useState("dashboard");
   const [busquedaUsuarios, setBusquedaUsuarios] = useState("");

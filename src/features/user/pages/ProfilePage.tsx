@@ -31,10 +31,10 @@ import {
   Eye,
   MessageSquare
 } from "lucide-react";
-import { useAuth } from "./AuthContext";
-import { toast } from "sonner@2.0.3";
+import { useAuth } from "@/app/providers/AuthContext";
+import { toast } from "sonner";
 import { Switch } from "@/shared/ui/switch";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 
 interface PerfilUsuarioProps {
   onRegresar: () => void;
@@ -159,7 +159,7 @@ const historialPedidos = [
   }
 ];
 
-export function PerfilUsuario({ onRegresar, initialTab = "personal", onTabChange }: PerfilUsuarioProps) {
+export function UserProfilePage({ onRegresar, initialTab = "personal", onTabChange }: PerfilUsuarioProps) {
   const { usuario, cerrarSesion, actualizarCarros } = useAuth();
   
   // Control de pestañas
@@ -865,7 +865,7 @@ export function PerfilUsuario({ onRegresar, initialTab = "personal", onTabChange
                 <Label>Combustible</Label>
                 <Select 
                   value={nuevoCarro.combustible}
-                  onValueChange={(value) => setNuevoCarro(prev => ({...prev, combustible: value}))}
+                  onValueChange={(value: any) => setNuevoCarro(prev => ({...prev, combustible: value}))}
                 >
                   <SelectTrigger>
                     <SelectValue />

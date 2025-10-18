@@ -1,16 +1,16 @@
 import { useState, useMemo } from "react";
-import { ProductCard } from "./ProductCard";
-import { FilterPanel } from "./FilterPanel";
-import { SortDropdown, SortOption } from "./SortDropdown";
+import { ProductCard } from "../components/ProductCard";
+import { FilterPanel } from "../components/FilterPanel";
+import { SortDropdown, SortOption } from "../components/SortDropdown";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Filter, Grid, List, MessageCircle, MapPin, Star, Wrench, Package, Clock, Calendar, TrendingUp, Navigation } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { toast } from "sonner@2.0.3";
-import { useAuth } from "./AuthContext";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { toast } from "sonner";
+import { useAuth } from "@/app/providers/AuthContext";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 
 interface Product {
   id: string;
@@ -70,7 +70,7 @@ interface ProductCatalogueProps {
   wishlistItems?: any[];
 }
 
-// Catálogo simplificado con solo 8 productos principales
+//TODO: llamada a productos
 const mockProducts: Product[] = [
   {
     id: "brake_001",
@@ -199,7 +199,7 @@ const mockProducts: Product[] = [
   }
 ];
 
-// Servicios de talleres
+// TODO: llamada a servicios
 const mockServices: Service[] = [
   {
     id: "service_001",
@@ -327,7 +327,7 @@ const mockServices: Service[] = [
   }
 ];
 
-// Talleres ecuatorianos expandidos con badges especiales
+// TODO: llamadas a detalles de talleres 
 const talleresDestacados = [
   {
     id: "1",
@@ -403,7 +403,7 @@ const talleresDestacados = [
   }
 ];
 
-export function ProductCatalogue({ 
+export function HomePage({ 
   onVerPerfil, 
   onAgregarCarrito, 
   onToggleWishlist, 

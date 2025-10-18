@@ -1,10 +1,10 @@
 import { Search, ShoppingCart, User, Car, LogOut, Home, Settings, Heart, Package, CreditCard, MapPin, Bell, Shield } from "lucide-react";
-import { Button } from ".@/shared/ui/button";
-import { Input } from ".@/shared/ui/input";
-import { Badge } from ".@/shared/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from ".@/shared/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuGroup } from ".@/shared/ui/dropdown-menu";
-import { useAuth } from "./AuthContext";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuGroup } from "../ui/dropdown-menu";
+import { useAuth } from "@/app/providers/AuthContext";
 
 interface HeaderProps {
   cartItemsCount?: number;

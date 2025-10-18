@@ -28,14 +28,14 @@ import {
   CheckCircle,
   AlertCircle
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface ServiciosTallerProps {
   onRegresar: () => void;
   onCambiarVista: (vista: string) => void;
 }
 
-// Mock data para servicios
+//TODO: llamada a items de tipo servicio
 const serviciosItems = [
   {
     id: "srv_001",
@@ -123,7 +123,7 @@ const serviciosItems = [
     estado: "activo"
   }
 ];
-
+//TODO: llamada al historial de servicios vendidos
 const historialServicios = [
   {
     id: "hist_001",
@@ -167,7 +167,7 @@ const historialServicios = [
   }
 ];
 
-export function ServiciosTaller({ onRegresar, onCambiarVista }: ServiciosTallerProps) {
+export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProps) {
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todos");
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState<string>("");

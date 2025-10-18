@@ -25,7 +25,7 @@ interface RegistroProductosProps {
   onCambiarVista: (vista: string) => void;
 }
 
-export function RegistroProductos({ onRegresar, onCambiarVista }: RegistroProductosProps) {
+export function RegisterProductPage({ onRegresar, onCambiarVista }: RegistroProductosProps) {
   const [producto, setProducto] = useState({
     nombre: "",
     codigo: "",

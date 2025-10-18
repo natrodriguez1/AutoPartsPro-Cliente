@@ -16,13 +16,13 @@ import {
   Package
 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface ChatTallerProps {
   taller: any;
   onRegresar: () => void;
 }
-
+//TOOD: API de la IA
 export function ChatTaller({ taller, onRegresar }: ChatTallerProps) {
   const [mensajes, setMensajes] = useState([
     {

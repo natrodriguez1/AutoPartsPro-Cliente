@@ -3,8 +3,8 @@ import { Heart, ShoppingCart, Star, MessageCircle, Award, CheckCircle, Eye, Glob
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent } from "@/shared/ui/card";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { toast } from "sonner";
 
 interface ProductCardProps {
   product: {

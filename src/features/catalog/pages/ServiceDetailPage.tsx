@@ -27,8 +27,8 @@ import {
   Shield,
   ThumbsUp
 } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { toast } from "sonner";
 
 interface ServiceDetailProps {
   service: any;
@@ -113,7 +113,7 @@ const serviciosRelacionados = [
   }
 ];
 
-export function ServiceDetail({ 
+export function ServiceDetailPage({ 
   service, 
   onRegresar, 
   onSolicitarServicio,
@@ -376,7 +376,7 @@ export function ServiceDetail({
                       <Label>Selecciona tu vehículo *</Label>
                       <Select 
                         value={datosReserva.vehiculoId}
-                        onValueChange={(value) => setDatosReserva(prev => ({...prev, vehiculoId: value}))}
+                        onValueChange={(value: any) => setDatosReserva(prev => ({...prev, vehiculoId: value}))}
                       >
                         <SelectTrigger>
                           <SelectValue placeholder="Elige un vehículo" />
@@ -405,7 +405,7 @@ export function ServiceDetail({
                         <Label>Hora preferida *</Label>
                         <Select 
                           value={datosReserva.hora}
-                          onValueChange={(value) => setDatosReserva(prev => ({...prev, hora: value}))}
+                          onValueChange={(value: any) => setDatosReserva(prev => ({...prev, hora: value}))}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Hora" />

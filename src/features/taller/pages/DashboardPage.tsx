@@ -23,7 +23,7 @@ import {
   Shield
 } from "lucide-react";
 
-// Datos mock para el dashboard
+// TODO: llamar a ventas por mes
 const ventasPorMes = [
   { mes: "Ene", ventas: 12000, piezas: 45 },
   { mes: "Feb", ventas: 15000, piezas: 52 },
@@ -32,7 +32,7 @@ const ventasPorMes = [
   { mes: "May", ventas: 19000, piezas: 61 },
   { mes: "Jun", ventas: 25000, piezas: 89 },
 ];
-
+//TODO: llamar a categorias mas vendidas
 const categoriasMasVendidas = [
   { categoria: "Frenos", valor: 35, color: "#8884d8" },
   { categoria: "Motor", valor: 25, color: "#82ca9d" },
@@ -40,7 +40,7 @@ const categoriasMasVendidas = [
   { categoria: "Suspensión", valor: 12, color: "#ff7c7c" },
   { categoria: "Otros", valor: 8, color: "#8dd1e1" },
 ];
-
+//TODO: llamar a top 4 talleres más cercanos
 const talleresCercanos = [
   { id: "1", nombre: "AutoMaster", distancia: "2.3 km", rating: 4.8, especialidad: "Motor" },
   { id: "2", nombre: "TallerPro", distancia: "3.1 km", rating: 4.6, especialidad: "Frenos" },
@@ -57,7 +57,7 @@ interface PanelTallerProps {
   onIniciarChat?: (taller: any) => void;
 }
 
-export function PanelTaller({ onCambiarVista, onAgregarCarrito, onVerPerfil, onIniciarChat }: PanelTallerProps) {
+export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil, onIniciarChat }: PanelTallerProps) {
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">

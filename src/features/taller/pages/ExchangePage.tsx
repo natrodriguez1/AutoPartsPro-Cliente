@@ -27,8 +27,8 @@ import {
   Plus,
   Truck
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
-
+import { toast } from "sonner";
+//TODO: llamada a talleres cercanos
 const talleresCercanos = [
   {
     id: "1",
@@ -61,7 +61,7 @@ const talleresCercanos = [
     inventario: ["Amortiguadores", "Resortes", "Rótulas", "Terminales"]
   }
 ];
-
+//TODO: llamada a solicitudes de intercambio
 const intercambiosEjemplo = [
   {
     id: "1",
@@ -113,7 +113,7 @@ interface IntercambioTalleresProps {
   onRegresar: () => void;
 }
 
-export function IntercambioTalleres({ onRegresar }: IntercambioTalleresProps) {
+export function ExchangePage({ onRegresar }: IntercambioTalleresProps) {
   const [vistaActual, setVistaActual] = useState<"lista" | "crear" | "detalles">("lista");
   const [intercambioSeleccionado, setIntercambioSeleccionado] = useState<any>(null);
   const [filtroEstado, setFiltroEstado] = useState("todos");

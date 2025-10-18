@@ -19,8 +19,8 @@ import {
   Edit,
   Lock
 } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { toast } from "sonner";
 import { motion } from "motion/react";
 
 interface CheckoutProps {
@@ -73,7 +73,7 @@ const tarjetasGuardadas = [
   }
 ];
 
-export function Checkout({ items, onRegresar, onCompletado }: CheckoutProps) {
+export function CheckoutPage({ items, onRegresar, onCompletado }: CheckoutProps) {
   const [pasoActual, setPasoActual] = useState(1);
   const [direccionSeleccionada, setDireccionSeleccionada] = useState("1");
   const [metodoEnvio, setMetodoEnvio] = useState("standard");

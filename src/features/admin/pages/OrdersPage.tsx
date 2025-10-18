@@ -32,7 +32,7 @@ interface OrdenesProps {
   onCambiarVista: (vista: string) => void;
 }
 
-// Mock data para órdenes de clientes
+//TODO: llamada al detalle de las ordenes del cliente
 const ordenesClientes = [
   {
     id: "ord_001",
@@ -131,7 +131,7 @@ const ordenesClientes = [
   }
 ];
 
-// Estadísticas de clientes frecuentes
+// TODO: llamada a lista de clientes frecuentes
 const clientesFrecuentes = [
   { id: "cli_001", nombre: "Carlos Mendoza", email: "carlos.mendoza@email.com", telefono: "+593-2-234-5678", ordenes: 8, ultimaVisita: "2024-01-20" },
   { id: "cli_002", nombre: "María González", email: "maria.gonzalez@email.com", telefono: "+593-4-567-8901", ordenes: 6, ultimaVisita: "2024-01-18" },
@@ -140,7 +140,7 @@ const clientesFrecuentes = [
   { id: "cli_005", nombre: "Roberto Vargas", email: "roberto.vargas@email.com", telefono: "+593-3-456-7890", ordenes: 5, ultimaVisita: "2024-01-24" }
 ];
 
-export function OrdenesCompra({ onRegresar, onCambiarVista }: OrdenesProps) {
+export function OrdersPage({ onRegresar, onCambiarVista }: OrdenesProps) {
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
   const [filtroCliente, setFiltroCliente] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState<string>("");

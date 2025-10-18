@@ -27,7 +27,7 @@ import {
   CheckCircle,
   XCircle
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface GestionUsuariosProps {
   onRegresar: () => void;
@@ -94,7 +94,7 @@ const permisos = {
   registro_ventas: "Registro de Ventas"
 };
 
-// Mock data para usuarios del taller
+// TODO: llamada a detalles de usuarios
 const usuariosTaller = [
   {
     id: "usr_001",
@@ -158,7 +158,7 @@ const usuariosTaller = [
   }
 ];
 
-export function GestionUsuarios({ onRegresar, onCambiarVista }: GestionUsuariosProps) {
+export function UsersPage({ onRegresar, onCambiarVista }: GestionUsuariosProps) {
   const [busqueda, setBusqueda] = useState<string>("");
   const [filtroRol, setFiltroRol] = useState<string>("todos");
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
@@ -551,7 +551,7 @@ export function GestionUsuarios({ onRegresar, onCambiarVista }: GestionUsuariosP
               </div>
               <div>
                 <Label>Departamento</Label>
-                <Select value={nuevoUsuario.departamento} onValueChange={(value) => setNuevoUsuario(prev => ({...prev, departamento: value}))}>
+                <Select value={nuevoUsuario.departamento} onValueChange={(value: any) => setNuevoUsuario(prev => ({...prev, departamento: value}))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecciona departamento" />
                   </SelectTrigger>
@@ -566,7 +566,7 @@ export function GestionUsuarios({ onRegresar, onCambiarVista }: GestionUsuariosP
             </div>
             <div>
               <Label>Rol *</Label>
-              <Select value={nuevoUsuario.rol} onValueChange={(value) => setNuevoUsuario(prev => ({...prev, rol: value}))}>
+              <Select value={nuevoUsuario.rol} onValueChange={(value: any) => setNuevoUsuario(prev => ({...prev, rol: value}))}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona rol" />
                 </SelectTrigger>

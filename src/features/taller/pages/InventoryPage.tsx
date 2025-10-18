@@ -25,15 +25,15 @@ import {
   Filter,
   BarChart3
 } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { toast } from "sonner";
 
 interface InventarioTallerProps {
   onRegresar: () => void;
   onCambiarVista: (vista: string) => void;
 }
 
-// Mock data para inventario
+// TODO: llamada a items del inventario
 const inventarioItems = [
   {
     id: "inv_001",
@@ -144,7 +144,7 @@ const inventarioItems = [
     estado: "agotado"
   }
 ];
-
+//TODO: llamada a movimientos del inventario
 const movimientosInventario = [
   {
     id: "mov_001",
@@ -188,7 +188,7 @@ const movimientosInventario = [
   }
 ];
 
-export function InventarioTaller({ onRegresar, onCambiarVista }: InventarioTallerProps) {
+export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerProps) {
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todos");
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState<string>("");
@@ -576,7 +576,7 @@ export function InventarioTaller({ onRegresar, onCambiarVista }: InventarioTalle
           <div className="space-y-4">
             <div>
               <Label>Tipo de movimiento</Label>
-              <Select value={ajusteStock.tipo} onValueChange={(value) => setAjusteStock(prev => ({...prev, tipo: value}))}>
+              <Select value={ajusteStock.tipo} onValueChange={(value: any) => setAjusteStock(prev => ({...prev, tipo: value}))}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>

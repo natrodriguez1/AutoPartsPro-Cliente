@@ -20,8 +20,8 @@ import {
   Undo,
   X
 } from "lucide-react";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
-import { toast } from "sonner@2.0.3";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
 // Productos adicionales para búsqueda
@@ -75,7 +75,7 @@ interface CarritoProps {
   onAgregarCarrito: (producto: any) => void;
 }
 
-export function Carrito({ 
+export function CartPage({ 
   items, 
   wishlistItems,
   itemsEliminados,

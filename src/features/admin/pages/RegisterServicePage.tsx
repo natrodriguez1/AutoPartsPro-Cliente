@@ -25,7 +25,7 @@ interface RegistroServiciosProps {
   onCambiarVista: (vista: string) => void;
 }
 
-export function RegistroServicios({ onRegresar, onCambiarVista }: RegistroServiciosProps) {
+export function RegisterServicePage({ onRegresar, onCambiarVista }: RegistroServiciosProps) {
   const [servicio, setServicio] = useState({
     nombre: "",
     categoria: "",

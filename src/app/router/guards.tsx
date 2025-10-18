@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/app/providers/AuthProvider';
+import { useAuth } from '../providers/AuthContext';
+import { JSX } from 'react';
 
 type Role = 'usuario' | 'taller' | 'admin';
 export function ProtectedRoute({ children, roles }: { children: JSX.Element,

@@ -32,8 +32,8 @@ import {
   Eye,
   DollarSign
 } from "lucide-react";
-import { toast } from "sonner@2.0.3";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { toast } from "sonner";
+import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 
 interface PerfilTallerProps {
   taller: any;
@@ -45,7 +45,7 @@ interface PerfilTallerProps {
   wishlistItems?: any[];
 }
 
-// Mock data para productos por taller
+// TODO: llamada a productos por taller
 const productosPorTaller = {
   "1": [ // AutoMaster Quito
     {
@@ -211,7 +211,7 @@ const productosPorTaller = {
   ]
 };
 
-// Mock data para reseñas
+// TODO: llamada a reseñas del taller
 const resenasEjemplo = [
   {
     id: "1",
@@ -275,7 +275,7 @@ const resenasEjemplo = [
   }
 ];
 
-export function PerfilTaller({ taller, onRegresar, onIniciarChat, onAgregarCarrito, onToggleWishlist, onVerProducto, wishlistItems = [] }: PerfilTallerProps) {
+export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregarCarrito, onToggleWishlist, onVerProducto, wishlistItems = [] }: PerfilTallerProps) {
   const [filtroCalificacion, setFiltroCalificacion] = useState<string>("todas");
   const [filtroProductos, setFiltroProductos] = useState<string>("todos");
   const [busquedaProductos, setBusquedaProductos] = useState<string>("");

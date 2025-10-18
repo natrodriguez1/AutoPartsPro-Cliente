@@ -7,14 +7,14 @@ import { Separator } from "@/shared/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Checkbox } from "@/shared/ui/checkbox";
 import { Eye, EyeOff, Car, User, Building, Mail, Phone, Lock } from "lucide-react";
-import { useAuth } from "./AuthContext";
-import { toast } from "sonner@2.0.3";
+import { useAuth } from "@/app/providers/AuthContext";
+import { toast } from "sonner";
 
 interface LoginProps {
   onCambiarVista: () => void;
 }
 
-export function Login({ onCambiarVista }: LoginProps) {
+export function LoginPage({ onCambiarVista }: LoginProps) {
   const { iniciarSesion } = useAuth();
   
   // Estados para usuario normal
