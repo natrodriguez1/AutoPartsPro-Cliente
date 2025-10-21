@@ -1,28 +1,28 @@
 import { useState } from "react";
-import { Header } from "./components/Header";
-import { ProductCatalogue } from "./components/ProductCatalogue";
-import { ProductDetail } from "./components/ProductDetail";
-import { ServiceDetail } from "./components/ServiceDetail";
-import { Footer } from "./components/Footer";
-import { Login } from "./components/Login";
-import { PanelTaller } from "./components/PanelTaller";
-import { PanelAdmin } from "./components/PanelAdmin";
+import { Header } from "./shared/components/Header";
+import { HomePage } from "./features/catalog/pages/HomePage";
+import { ProductDetailPage } from "./features/catalog/pages/ProductDetailPage";
+import { ServiceDetailPage } from "./features/catalog/pages/ServiceDetailPage";
+import { Footer } from "./shared/components/Footer";
+import { LoginPage } from "./features/auth/pages/LoginPage";
+import { TallerDashboard } from "./features/taller/pages/DashboardPage";
+import { AdminDashboard } from "./features/admin/pages/DashboardPage";
 
-import { PerfilTaller } from "./components/PerfilTaller";
-import { ChatTaller } from "./components/ChatTaller";
-import { Carrito } from "./components/Carrito";
-import { Checkout } from "./components/Checkout";
-import { PerfilUsuario } from "./components/PerfilUsuario";
-import { Chatbot } from "./components/Chatbot";
-import { ChatbotTaller } from "./components/ChatbotTaller";
-import { InventarioTaller } from "./components/InventarioTaller";
-import { OrdenesCompra } from "./components/OrdenesCompra";
-import { GestionUsuarios } from "./components/GestionUsuarios";
-import { RegistroProductos } from "./components/RegistroProductos";
-import { RegistroServicios } from "./components/RegistroServicios";
-import { ServiciosTaller } from "./components/ServiciosTaller";
-import { AuthProvider, useAuth } from "./components/AuthContext";
-import { Toaster } from "./components/ui/sonner";
+import { TallerProfilePage } from "./features/taller/pages/ProfilePage";
+import { ChatTaller } from "./features/taller/pages/ChatPage";
+import { CartPage } from "./features/cart/pages/CartPage";
+import { CheckoutPage } from "./features/cart/pages/CheckoutPage";
+import { UserProfilePage } from "./features/user/pages/ProfilePage";
+import { Chatbot } from "./features/chatbot/components/Chatbot";
+import { ChatbotTaller } from "./features/chatbot/components/ChatbotTaller";
+import { InventoryPage } from "./features/taller/pages/InventoryPage";
+import { OrdersPage } from "./features/admin/pages/OrdersPage";
+import { UsersPage } from "./features/admin/pages/UsersPage";
+import { RegisterProductPage } from "./features/admin/pages/RegisterProductPage";
+import { RegisterServicePage } from "./features/admin/pages/RegisterServicePage";
+import { ServicesPage } from "./features/taller/pages/ServicesPage";
+import { AuthProvider, useAuth } from "./app/providers/AuthContext";
+import { Toaster } from "sonner";
 
 type Vista = "home" | "login" | "panel-taller" | "panel-admin" | "perfil-taller" | "chat" | "carrito" | "checkout" | "perfil-usuario" | "product-detail" | "service-detail" | "inventario" | "ordenes" | "gestion-usuarios" | "registro-productos" | "registro-servicios" | "servicios";
 
@@ -131,31 +131,31 @@ function AppContent() {
 
   // Si no hay usuario, mostrar login
   if (!usuario) {
-    return <Login onCambiarVista={() => cambiarVista("home")} />;
+    return <LoginPage onCambiarVista={() => cambiarVista("home")} />;
   }
 
   const renderContent = () => {
     switch (vista) {
       case "panel-admin":
-        return <PanelAdmin onCambiarVista={cambiarVista} />;
+        return <AdminDashboard onCambiarVista={cambiarVista} />;
       case "panel-taller":
-        return <PanelTaller onCambiarVista={cambiarVista} onAgregarCarrito={agregarAlCarrito} onVerPerfil={(taller) => cambiarVista("perfil-taller", taller)} onIniciarChat={iniciarChat} />;
+        return <TallerDashboard onCambiarVista={cambiarVista} onAgregarCarrito={agregarAlCarrito} onVerPerfil={(taller) => cambiarVista("perfil-taller", taller)} onIniciarChat={iniciarChat} />;
       case "inventario":
-        return <InventarioTaller onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
+        return <InventoryPage onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
       case "ordenes":
-        return <OrdenesCompra onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
+        return <OrdersPage onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
       case "gestion-usuarios":
-        return <GestionUsuarios onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
+        return <UsersPage onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
       case "registro-productos":
-        return <RegistroProductos onRegresar={() => cambiarVista("inventario")} onCambiarVista={cambiarVista} />;
+        return <RegisterProductPage onRegresar={() => cambiarVista("inventario")} onCambiarVista={cambiarVista} />;
       case "registro-servicios":
-        return <RegistroServicios onRegresar={() => cambiarVista("servicios")} onCambiarVista={cambiarVista} />;
+        return <RegisterServicePage onRegresar={() => cambiarVista("servicios")} onCambiarVista={cambiarVista} />;
       case "servicios":
-        return <ServiciosTaller onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
+        return <ServicesPage onRegresar={() => cambiarVista("panel-taller")} onCambiarVista={cambiarVista} />;
 
       case "perfil-taller":
         return (
-          <PerfilTaller 
+          <TallerProfilePage 
             taller={tallerSeleccionado} 
             onRegresar={() => cambiarVista("home")} 
             onIniciarChat={() => cambiarVista("chat", tallerSeleccionado)}
@@ -169,7 +169,7 @@ function AppContent() {
         return <ChatTaller taller={tallerSeleccionado} onRegresar={() => cambiarVista("home")} />;
       case "product-detail":
         return (
-          <ProductDetail 
+          <ProductDetailPage 
             product={productoSeleccionado} 
             onRegresar={() => cambiarVista("home")}
             onAgregarCarrito={agregarAlCarrito}
@@ -181,7 +181,7 @@ function AppContent() {
         );
       case "service-detail":
         return (
-          <ServiceDetail 
+          <ServiceDetailPage 
             service={servicioSeleccionado} 
             onRegresar={() => cambiarVista("home")}
             onSolicitarServicio={solicitarServicio}
@@ -190,7 +190,7 @@ function AppContent() {
         );
       case "carrito":
         return (
-          <Carrito 
+          <CartPage 
             items={carritoItems} 
             wishlistItems={wishlistItems}
             itemsEliminados={itemsEliminados}
@@ -204,13 +204,13 @@ function AppContent() {
           />
         );
       case "checkout":
-        return <Checkout items={carritoItems} onRegresar={() => cambiarVista("carrito")} onCompletado={() => {
+        return <CheckoutPage items={carritoItems} onRegresar={() => cambiarVista("carrito")} onCompletado={() => {
           setCarritoItems([]);
           cambiarVista("home");
         }} />;
       case "perfil-usuario":
         return (
-          <PerfilUsuario 
+          <UserProfilePage 
             onRegresar={() => cambiarVista("home")}
             initialTab={perfilTab}
             onTabChange={setPerfilTab}
@@ -219,12 +219,12 @@ function AppContent() {
       default:
         // Redirigir según tipo de usuario
         if (usuario.tipo === "admin") {
-          return <PanelAdmin onCambiarVista={cambiarVista} />;
+          return <AdminDashboard onCambiarVista={cambiarVista} />;
         } else if (usuario.tipo === "taller") {
-          return <PanelTaller onCambiarVista={cambiarVista} onAgregarCarrito={agregarAlCarrito} onVerPerfil={(taller) => cambiarVista("perfil-taller", taller)} onIniciarChat={iniciarChat} />;
+          return <TallerDashboard onCambiarVista={cambiarVista} onAgregarCarrito={agregarAlCarrito} onVerPerfil={(taller) => cambiarVista("perfil-taller", taller)} onIniciarChat={iniciarChat} />;
         }
         return (
-          <ProductCatalogue 
+          <HomePage 
             onVerPerfil={(taller) => cambiarVista("perfil-taller", taller)} 
             onAgregarCarrito={agregarAlCarrito}
             onToggleWishlist={toggleWishlist}

@@ -5,6 +5,9 @@
 
   ## Running the code
 
+  Dependencies:
+  'npm i react-toastify'
+
   Run `npm i` to install the dependencies.
 
   Run `npm run dev` to start the development server.

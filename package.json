@@ -1,6 +1,7 @@
 {
       "name": "AutoParts Pro",
       "version": "0.1.0",
+      "homepage": ".",
       "private": true,
       "dependencies": {
             "@radix-ui/react-accordion": "^1.2.3",
@@ -42,13 +43,19 @@
             "react-dom": "^18.3.1",
             "react-hook-form": "^7.55.0",
             "react-resizable-panels": "^2.1.7",
+            "react-router": "^7.9.4",
+            "react-router-dom": "^7.9.4",
+            "react-toastify": "^11.0.5",
             "recharts": "^2.15.2",
             "sonner": "^2.0.3",
             "tailwind-merge": "*",
-            "vaul": "^1.1.2"
+            "vaul": "^1.1.2",
+            "zustand": "^5.0.8"
       },
       "devDependencies": {
             "@types/node": "^20.10.0",
+            "@types/react": "^19.2.2",
+            "@types/react-dom": "^19.2.2",
             "@vitejs/plugin-react-swc": "^3.10.2",
             "vite": "^6.3.6"
       },
