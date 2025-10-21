@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { ProductCard } from "../components/ProductCard";
 import { FilterPanel } from "../components/FilterPanel";
 import { SortDropdown, SortOption } from "../components/SortDropdown";
@@ -11,25 +11,11 @@ import { Badge } from "@/shared/ui/badge";
 import { toast } from "sonner";
 import { useAuth } from "@/app/providers/AuthContext";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import api from "@/shared/lib/axios";
+import { useNavigate } from "react-router-dom";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviewCount: number;
-  image: string;
-  category: string;
-  brand: string;
-  compatibility: string[];
-  isNew?: boolean;
-  isSale?: boolean;
-  salePercentage?: number;
-  description?: string;
-  tallerId?: string;
-  tallerNombre?: string;
-}
+
+
 
 interface Service {
   id: string;
@@ -50,6 +36,25 @@ interface Service {
   especialidad?: string;
   isPromoted?: boolean;
   isUrgent?: boolean;
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviewCount: number;
+  image: string;
+  category: string;
+  brand: string;
+  compatibility: string[];
+  isNew?: boolean;
+  isSale?: boolean;
+  salePercentage?: number;
+  description?: string;
+  tallerId?: string;
+  tallerNombre?: string;
 }
 
 interface FilterState {
@@ -403,199 +408,7 @@ const talleresDestacados = [
   }
 ];
 
-export function HomePage({ 
-  onVerPerfil, 
-  onAgregarCarrito, 
-  onToggleWishlist, 
-  onVerProducto,
-  onVerServicio,
-  onIniciarChat,
-  wishlistItems = [] 
-}: ProductCatalogueProps) {
-  const { usuario } = useAuth();
-  const [tabActiva, setTabActiva] = useState<"productos" | "servicios">("productos");
-  const [filters, setFilters] = useState<FilterState>({
-    categories: [],
-    priceRange: [0, 500],
-    minRating: 0,
-    brand: [],
-    compatibility: [],
-  });
-  
-  const [sortBy, setSortBy] = useState<SortOption>("relevance");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Carros del usuario para compatibilidad
-  const carrosUsuario = usuario?.carros || [];
-
-  // Filter and sort products
-  const filteredAndSortedProducts = useMemo(() => {
-    let result = [...mockProducts];
-
-    // Apply filters
-    if (filters.categories.length > 0) {
-      result = result.filter(product => filters.categories.includes(product.category));
-    }
-
-    if (filters.brand.length > 0) {
-      result = result.filter(product => filters.brand.includes(product.brand));
-    }
-
-    if (filters.compatibility.length > 0) {
-      result = result.filter(product => 
-        filters.compatibility.some(compat => product.compatibility.includes(compat))
-      );
-    }
-
-    result = result.filter(product => 
-      product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
-    );
-
-    if (filters.minRating > 0) {
-      result = result.filter(product => product.rating >= filters.minRating);
-    }
-
-    // Apply sorting
-    switch (sortBy) {
-      case "price-low-high":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high-low":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      case "name":
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "newest":
-        result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-        break;
-      default:
-        // relevance - prioritizar productos compatibles
-        result.sort((a, b) => {
-          const aCompatible = carrosUsuario.some((car: any) => {
-            const carBrand = car.marca.toLowerCase();
-            return a.compatibility.some(compat => 
-              compat.toLowerCase() !== "universal" && (
-                compat.toLowerCase() === carBrand ||
-                compat.toLowerCase().includes(carBrand)
-              )
-            );
-          });
-          
-          const bCompatible = carrosUsuario.some((car: any) => {
-            const carBrand = car.marca.toLowerCase();
-            return b.compatibility.some(compat => 
-              compat.toLowerCase() !== "universal" && (
-                compat.toLowerCase() === carBrand ||
-                compat.toLowerCase().includes(carBrand)
-              )
-            );
-          });
-          
-          if (aCompatible && !bCompatible) return -1;
-          if (!aCompatible && bCompatible) return 1;
-          return 0;
-        });
-        break;
-    }
-
-    return result;
-  }, [filters, sortBy, carrosUsuario]);
-
-  // Filter and sort services
-  const filteredAndSortedServices = useMemo(() => {
-    let result = [...mockServices];
-    
-    // Apply basic filtering for services
-    if (filters.categories.length > 0) {
-      result = result.filter(service => filters.categories.includes(service.category));
-    }
-    
-    result = result.filter(service => 
-      service.price >= filters.priceRange[0] && service.price <= filters.priceRange[1]
-    );
-
-    if (filters.minRating > 0) {
-      result = result.filter(service => service.rating >= filters.minRating);
-    }
-
-    // Apply sorting
-    switch (sortBy) {
-      case "price-low-high":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-high-low":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "rating":
-        result.sort((a, b) => b.rating - a.rating);
-        break;
-      case "name":
-        result.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      default:
-        // relevance - prioritizar servicios promocionados
-        result.sort((a, b) => {
-          if (a.isPromoted && !b.isPromoted) return -1;
-          if (!a.isPromoted && b.isPromoted) return 1;
-          return b.rating - a.rating;
-        });
-        break;
-    }
-
-    return result;
-  }, [filters, sortBy]);
-
-  const handleAddToCart = (productId: string) => {
-    const product = mockProducts.find(p => p.id === productId);
-    if (product && onAgregarCarrito) {
-      onAgregarCarrito(product);
-      toast.success(`${product.name} agregado al carrito!`);
-    }
-  };
-
-  const handleWishlistToggle = (productId: string) => {
-    const product = mockProducts.find(p => p.id === productId);
-    if (product && onToggleWishlist) {
-      onToggleWishlist(product);
-      const isInWishlist = wishlistItems.some(item => item.id === productId);
-      toast.success(isInWishlist ? 
-        `${product.name} eliminado de favoritos` : 
-        `${product.name} agregado a favoritos`
-      );
-    }
-  };
-
-  const handleVerProducto = (productId: string) => {
-    const product = mockProducts.find(p => p.id === productId);
-    if (product && onVerProducto) {
-      onVerProducto(product);
-    }
-  };
-
-  const handleVerServicio = (serviceId: string) => {
-    const service = mockServices.find(s => s.id === serviceId);
-    if (service && onVerServicio) {
-      onVerServicio(service);
-    }
-  };
-
-  const handleIniciarChat = (taller: any) => {
-    if (onIniciarChat) {
-      onIniciarChat(taller);
-      toast.success(`Iniciando chat con ${taller.nombre}...`);
-    } else {
-      // Fallback al contacto por WhatsApp si no hay función de chat
-      if (taller.whatsapp) {
-        const mensaje = encodeURIComponent(`Hola ${taller.nombre}, estoy interesado en sus servicios de ${taller.especialidad}. ¿Podrían ayudarme?`);
-        window.open(`https://wa.me/${taller.whatsapp.replace(/[^0-9]/g, '')}?text=${mensaje}`, '_blank');
-        toast.success(`Abriendo WhatsApp para contactar ${taller.nombre}`);
-      }
-    }
-  };
 
   const renderBadges = (badges: string[]) => {
     return badges.map(badge => {
@@ -636,6 +449,225 @@ export function HomePage({
     }
     return stars;
   };
+  export function HomePage() {
+  const { usuario } = useAuth();
+  const navigate = useNavigate();
+
+  const [tabActiva, setTabActiva] = useState<"productos" | "servicios">("productos");
+  const [filters, setFilters] = useState<FilterState>({
+    categories: [],
+    priceRange: [0, 500],
+    minRating: 0,
+    brand: [],
+    compatibility: [],
+  });
+  const [sortBy, setSortBy] = React.useState<SortOption>("relevance");
+  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  // Instead of using props, use router navigation:
+  const handleVerPerfil = (tallerId: string) => {
+    navigate(`/taller/perfil/${tallerId}`);
+  };
+
+  const handleVerProducto = (productoId: string) => {
+    navigate(`/productos/${productoId}`);
+  };
+
+  const handleVerServicio = (servicioId: string) => {
+    navigate(`/servicios/${servicioId}`);
+  };
+
+  const handleIrCarrito = () => {
+    navigate("/carrito");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const carrosUsuario = usuario?.carros || [];
+
+  const filteredAndSortedProducts = useMemo(() => {
+  let result = [...mockProducts];
+
+  if (filters.categories.length > 0) {
+    result = result.filter(product => filters.categories.includes(product.category));
+  }
+
+  if (filters.brand.length > 0) {
+    result = result.filter(product => filters.brand.includes(product.brand));
+  }
+
+  if (filters.compatibility.length > 0) {
+    result = result.filter(product => 
+      filters.compatibility.some(compat => product.compatibility.includes(compat))
+    );
+  }
+
+  result = result.filter(product => 
+    product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+  );
+
+  if (filters.minRating > 0) {
+    result = result.filter(product => product.rating >= filters.minRating);
+  }
+
+  // Apply sorting
+  switch (sortBy) {
+    case "price-low-high":
+      result.sort((a, b) => a.price - b.price);
+      break;
+    case "price-high-low":
+      result.sort((a, b) => b.price - a.price);
+      break;
+    case "rating":
+      result.sort((a, b) => b.rating - a.rating);
+      break;
+    case "name":
+      result.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case "newest":
+      result.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
+      break;
+    default:
+      // relevance - prioritizar productos compatibles
+      result.sort((a, b) => {
+        const aCompatible = carrosUsuario.some((car: any) => {
+          const carBrand = car.marca.toLowerCase();
+          return a.compatibility.some(compat => 
+            compat.toLowerCase() !== "universal" && (
+              compat.toLowerCase() === carBrand ||
+              compat.toLowerCase().includes(carBrand)
+            )
+          );
+        });
+        
+        const bCompatible = carrosUsuario.some((car: any) => {
+          const carBrand = car.marca.toLowerCase();
+          return b.compatibility.some(compat => 
+            compat.toLowerCase() !== "universal" && (
+              compat.toLowerCase() === carBrand ||
+              compat.toLowerCase().includes(carBrand)
+            )
+          );
+        });
+        
+        if (aCompatible && !bCompatible) return -1;
+        if (!aCompatible && bCompatible) return 1;
+        return 0;
+      });
+      break;
+  }
+
+  return result;
+}, [filters, sortBy, carrosUsuario]);
+
+//   // Filter and sort services
+const filteredAndSortedServices = useMemo(() => {
+  let result = [...mockServices];
+  
+  // Apply basic filtering for services
+  if (filters.categories.length > 0) {
+    result = result.filter(service => filters.categories.includes(service.category));
+  }
+  
+  result = result.filter(service => 
+    service.price >= filters.priceRange[0] && service.price <= filters.priceRange[1]
+  );
+
+  if (filters.minRating > 0) {
+    result = result.filter(service => service.rating >= filters.minRating);
+  }
+
+  // Apply sorting
+  switch (sortBy) {
+    case "price-low-high":
+      result.sort((a, b) => a.price - b.price);
+      break;
+    case "price-high-low":
+      result.sort((a, b) => b.price - a.price);
+      break;
+    case "rating":
+      result.sort((a, b) => b.rating - a.rating);
+      break;
+    case "name":
+      result.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    default:
+      // relevance - prioritizar servicios promocionados
+      result.sort((a, b) => {
+        if (a.isPromoted && !b.isPromoted) return -1;
+        if (!a.isPromoted && b.isPromoted) return 1;
+        return b.rating - a.rating;
+      });
+      break;
+  }
+
+  return result;
+}, [filters, sortBy]);
+
+const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
+const handleWishlistToggle = async (productId: string) => {
+  const product = mockProducts.find(p => p.id === productId);
+  if (!product) return;
+
+  const isInWishlist = wishlistItems.some(item => item.id === productId);
+
+  try {
+    if (isInWishlist) {
+      await api.delete(`/api/wishlist/${productId}`);
+      setWishlistItems(prev => prev.filter(item => item.id !== productId));
+      toast.success(`${product.name} eliminado de favoritos`);
+    } else {
+      await api.post("/api/wishlist", { productId });
+      setWishlistItems(prev => [...prev, product]);
+      toast.success(`${product.name} agregado a favoritos`);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Hubo un problema al actualizar favoritos");
+  }
+};
+
+const handleViewProduct = (id: string) => navigate(`/productos/${id}`);
+const [cartItems, setCartItems] = useState<Product[]>([]);
+const handleAddToCart = async (productId: string) => {
+  const product = mockProducts.find(p => p.id === productId);
+  if (!product) return;
+
+  const isInCart = cartItems.some(item => item.id === productId);
+
+  try {
+    if (isInCart) {
+      await api.delete(`/api/cart/${productId}`);
+      setCartItems(prev => prev.filter(item => item.id !== productId));
+      toast.success(`${product.name} eliminado de favoritos`);
+    } else {
+      await api.post(`/api/cart/${productId}`);
+      setCartItems(prev => [...prev, product]);
+      toast.success(`${product.name} agregado a favoritos`);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Hubo un problema al actualizar favoritos");
+  }
+};
+
+
+const handleIniciarChat = (taller: any) => {
+  if (taller.whatsapp) {
+    const mensaje = encodeURIComponent(
+      `Hola ${taller.nombre}, estoy interesado en sus servicios de ${taller.especialidad}. ¿Podrían ayudarme?`
+    );
+    window.open(
+      `https://wa.me/${taller.whatsapp.replace(/[^0-9]/g, '')}?text=${mensaje}`,
+      "_blank"
+    );
+    toast.success(`Abriendo WhatsApp para contactar ${taller.nombre}`);
+  } else {
+    toast.error("No se pudo iniciar el chat ni contactar por WhatsApp");
+  }
+};
 
   return (
     <div className="container mx-auto px-4 py-6">
@@ -671,7 +703,7 @@ export function HomePage({
                   "{taller.reseñas[0]}"
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => onVerPerfil?.(taller)}>
+                  <Button size="sm" variant="outline" onClick={() => handleVerPerfil(taller.id)}>
                     Ver Perfil
                   </Button>
                   <Button size="sm" onClick={() => handleIniciarChat(taller)}>

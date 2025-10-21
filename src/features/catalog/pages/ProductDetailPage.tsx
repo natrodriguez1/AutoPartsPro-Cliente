@@ -127,7 +127,7 @@ const reviewsDetalladas = [
   }
 ];
 
-export function ProductDetailPage({ 
+export function ProductDetailPage ({ 
   product, 
   onRegresar, 
   onAgregarCarrito, 
@@ -140,7 +140,7 @@ export function ProductDetailPage({
   const [imagenSeleccionada, setImagenSeleccionada] = useState(0);
   const [tabActiva, setTabActiva] = useState("descripcion");
 
-  // Múltiples imágenes del producto
+  // TODO: llamada a imagenes registradas del productos
   const imagenesProducto = [
     product?.image || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop",
     "https://images.unsplash.com/photo-1563592181-b4fa94773834?w=600&h=600&fit=crop",
