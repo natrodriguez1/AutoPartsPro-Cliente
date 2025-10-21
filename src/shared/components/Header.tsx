@@ -5,6 +5,8 @@ import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuGroup } from "../ui/dropdown-menu";
 import { useAuth } from "@/app/providers/AuthContext";
+import { useNavigate } from "react-router-dom";
+import React, { useState, useMemo, useEffect } from "react";
 
 interface HeaderProps {
   cartItemsCount?: number;
@@ -17,23 +19,49 @@ interface HeaderProps {
   onIrPedidos?: () => void;
   onIrConfiguracion?: () => void;
 }
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  rating: number;
+  reviewCount: number;
+  image: string;
+  category: string;
+  brand: string;
+  compatibility: string[];
+  isNew?: boolean;
+  isSale?: boolean;
+  salePercentage?: number;
+  description?: string;
+  tallerId?: string;
+  tallerNombre?: string;
+}
 
-export function Header({ 
-  cartItemsCount = 0, 
-  onIrCarrito, 
-  onIrHome, 
-  onIrPanel, 
-  onIrPerfil,
-  onIrVehiculos,
-  onIrDirecciones, 
-  onIrPedidos,
-  onIrConfiguracion
-}: HeaderProps) {
+export function Header() {
   const { usuario, cerrarSesion } = useAuth();
+  const [cartItems] = useState<Product[]>([]);
+  const cartItemsCount = cartItems.length;
+  const navigate = useNavigate();
 
   const handleLogout = () => {
     cerrarSesion();
-    onIrHome?.();
+    navigate("/");
+  };
+  const handleIrHome = () => {
+    navigate("/");
+  }
+  const handleIrPanelTaller = () => {
+    navigate("/taller");
+  }
+  const handleIrPanelAdmin = () => {
+    navigate("/admin");
+  }
+  const handleIrCarrito = () => {
+    navigate("/carrito");
+  };
+  const handleIrPerfil = () => {
+    navigate("/perfil")
   };
 
   const getUserInitials = () => {
@@ -59,7 +87,7 @@ export function Header({
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center gap-6">
         {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={onIrHome}>
+        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => handleIrCarrito()}>
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
             <Car className="h-6 w-6 text-primary-foreground" />
           </div>
@@ -79,7 +107,7 @@ export function Header({
 
         {/* Actions */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <Button variant="ghost" size="sm" className="relative" onClick={onIrCarrito}>
+          <Button variant="ghost" size="sm" className="relative" onClick={() => handleIrCarrito()}>
             <ShoppingCart className="h-5 w-5" />
             {cartItemsCount > 0 && (
               <Badge 
@@ -127,24 +155,24 @@ export function Header({
                 
                 {/* Navegación principal */}
                 <DropdownMenuGroup>
-                  <DropdownMenuItem onClick={onIrHome}>
+                  <DropdownMenuItem onClick={handleIrHome}>
                     <Home className="mr-2 h-4 w-4" />
                     <span>Inicio</span>
                   </DropdownMenuItem>
                   
                   {usuario.tipo === "admin" ? (
-                    <DropdownMenuItem onClick={onIrPanel}>
+                    <DropdownMenuItem onClick={handleIrPanelAdmin}>
                       <Shield className="mr-2 h-4 w-4" />
                       <span>Panel de Administración</span>
                     </DropdownMenuItem>
                   ) : usuario.tipo === "taller" ? (
-                    <DropdownMenuItem onClick={onIrPanel}>
+                    <DropdownMenuItem onClick={handleIrPanelTaller}>
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Panel de Taller</span>
                     </DropdownMenuItem>
                   ) : (
                     <>
-                      <DropdownMenuItem onClick={onIrCarrito}>
+                      <DropdownMenuItem onClick={() => handleIrCarrito()}>
                         <ShoppingCart className="mr-2 h-4 w-4" />
                         <span>Mi Carrito</span>
                         {cartItemsCount > 0 && (
@@ -162,7 +190,7 @@ export function Header({
                         </Badge>
                       </DropdownMenuItem>
                       
-                      <DropdownMenuItem onClick={onIrPedidos}>
+                      <DropdownMenuItem onClick={{/* TODO: Implementar pedidos */}}>
                         <Package className="mr-2 h-4 w-4" />
                         <span>Mis Pedidos</span>
                       </DropdownMenuItem>
@@ -178,13 +206,13 @@ export function Header({
                     Configuración
                   </DropdownMenuLabel>
                   
-                  <DropdownMenuItem onClick={onIrPerfil}>
+                  <DropdownMenuItem onClick={() => {handleIrPerfil}}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Mi Perfil</span>
                   </DropdownMenuItem>
                   
                   {usuario.tipo === "usuario" && (
-                    <DropdownMenuItem onClick={onIrVehiculos}>
+                    <DropdownMenuItem onClick={{/* TODO: Implementar vehiculos */}}>
                       <Car className="mr-2 h-4 w-4" />
                       <span>Mis Vehículos</span>
                       <Badge variant="outline" className="ml-auto text-xs">
@@ -193,7 +221,7 @@ export function Header({
                     </DropdownMenuItem>
                   )}
                   
-                  <DropdownMenuItem onClick={onIrDirecciones}>
+                  <DropdownMenuItem onClick={{/* TODO: Implementar direcciones */}}>
                     <MapPin className="mr-2 h-4 w-4" />
                     <span>Direcciones</span>
                   </DropdownMenuItem>
@@ -203,7 +231,7 @@ export function Header({
                     <span>Métodos de Pago</span>
                   </DropdownMenuItem>
                   
-                  <DropdownMenuItem onClick={onIrConfiguracion}>
+                  <DropdownMenuItem onClick={{/* TODO: Implementar configuracion */}}>
                     <Bell className="mr-2 h-4 w-4" />
                     <span>Notificaciones</span>
                   </DropdownMenuItem>
@@ -217,7 +245,7 @@ export function Header({
                     <span>Centro de Ayuda</span>
                   </DropdownMenuItem>
                   
-                  <DropdownMenuItem onClick={onIrConfiguracion}>
+                  <DropdownMenuItem onClick={{/* TODO: Implementar configuracion */}}>
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Configuración</span>
                   </DropdownMenuItem>

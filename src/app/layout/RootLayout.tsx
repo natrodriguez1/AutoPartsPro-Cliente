@@ -1,16 +1,22 @@
-import { Outlet } from 'react-router-dom';
-import { Header } from '@/shared/components/Header';
-import { Footer } from '@/shared/components/Footer';
-import { Toaster } from '@/shared/ui/sonner';
+import { Outlet } from "react-router-dom";
+import { Header } from "@/shared/components/Header";
+import { Footer } from "@/shared/components/Footer";
+import { Chatbot } from "@/features/chatbot/components/Chatbot";
+import { ChatbotTaller } from "@/features/chatbot/components/ChatbotTaller";
+import { useAuth } from "@/app/providers/AuthContext";
+
 export default function RootLayout() {
-    return (
-        <div className="min-h-dvh flex flex-col">
-            <Header />
-            <main className="flex-1 container mx-auto px-4 py-6">
-                <Outlet />
-            </main>
-            <Footer />
-            <Toaster />
-        </div>
-    );
+  const { usuario } = useAuth();
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+      {usuario?.tipo === "usuario" && <Chatbot />}
+      {usuario?.tipo === "taller" && <ChatbotTaller />}
+    </div>
+  );
 }
