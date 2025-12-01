@@ -58,10 +58,10 @@ export function Header() {
     navigate("/admin");
   }
   const handleIrCarrito = () => {
-    navigate("/carrito");
+    navigate(`/carrito`);
   };
   const handleIrPerfil = () => {
-    navigate("/perfil")
+    navigate(`/perfil`);
   };
 
   const getUserInitials = () => {
@@ -87,7 +87,7 @@ export function Header() {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center gap-6">
         {/* Logo */}
-        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => handleIrCarrito()}>
+        <div className="flex items-center gap-2 cursor-pointer flex-shrink-0" onClick={() => handleIrHome()}>
           <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
             <Car className="h-6 w-6 text-primary-foreground" />
           </div>
@@ -206,7 +206,7 @@ export function Header() {
                     Configuración
                   </DropdownMenuLabel>
                   
-                  <DropdownMenuItem onClick={() => {handleIrPerfil}}>
+                  <DropdownMenuItem onClick={() => {handleIrPerfil()}}>
                     <User className="mr-2 h-4 w-4" />
                     <span>Mi Perfil</span>
                   </DropdownMenuItem>

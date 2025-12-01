@@ -1,4 +1,7 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router";
+import { getServiceByParamId } from "@/features/catalog/services/catalog.local.services";
+import { useAuth } from "@/app/providers/AuthContext";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -31,9 +34,9 @@ import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 import { toast } from "sonner";
 
 interface ServiceDetailProps {
-  service: any;
-  onRegresar: () => void;
-  onSolicitarServicio: (servicio: any, datos: any) => void;
+  service?: any;
+  onRegresar?: () => void;
+  onSolicitarServicio?: (servicio: any, datos: any) => void;
   userCars?: Array<{
     id: string;
     marca: string;
@@ -114,11 +117,32 @@ const serviciosRelacionados = [
 ];
 
 export function ServiceDetailPage({ 
-  service, 
-  onRegresar, 
-  onSolicitarServicio,
-  userCars = []
-}: ServiceDetailProps) {
+  service: serviceProp,
+  onRegresar: onRegresarProp,
+  onSolicitarServicio: onSolicitarServicioProp,
+  userCars: userCarsProp,
+}: ServiceDetailProps = {}) {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+  const { usuario } = useAuth();
+
+  const userCars = userCarsProp ?? (usuario?.carros || []);
+
+  const service = useMemo(() => {
+    if (serviceProp) return serviceProp;
+    if (!id) return null;
+    return getServiceByParamId(id);
+  }, [serviceProp, id]);
+
+  const onRegresar = onRegresarProp ?? (() => navigate(-1));
+
+  const onSolicitarServicio =
+    onSolicitarServicioProp ??
+    ((servicio: any, datos: any) => {
+      // ✅ fallback temporal (luego lo conectas a endpoint)
+      console.log("Solicitud servicio:", { servicio, datos });
+    });
+
   const [tabActiva, setTabActiva] = useState("descripcion");
   const [mostrarDialogoReserva, setMostrarDialogoReserva] = useState(false);
   

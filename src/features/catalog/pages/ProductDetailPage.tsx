@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router";
+import { getProductByParamId } from "../services/catalog.local.products";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -26,11 +29,11 @@ import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 import { toast } from "sonner";
 
 interface ProductDetailProps {
-  product: any;
-  onRegresar: () => void;
-  onAgregarCarrito: (producto: any, cantidad: number) => void;
-  onToggleWishlist: (producto: any) => void;
-  onVerProducto: (producto: any) => void;
+  product?: any;
+  onRegresar?: () => void;
+  onAgregarCarrito?: (producto: any, cantidad: number) => void;
+  onToggleWishlist?: (producto: any) => void;
+  onVerProducto?: (producto: any) => void;
   isInWishlist?: boolean;
   userCars?: Array<{
     id: string;
@@ -128,14 +131,28 @@ const reviewsDetalladas = [
 ];
 
 export function ProductDetailPage ({ 
-  product, 
-  onRegresar, 
-  onAgregarCarrito, 
-  onToggleWishlist, 
-  onVerProducto,
+  product: productProp,
+  onRegresar: onRegresarProp,
+  onAgregarCarrito: onAgregarCarritoProp,
+  onToggleWishlist: onToggleWishlistProp,
+  onVerProducto: onVerProductoProp,
   isInWishlist = false,
-  userCars = []
+  userCars = [],
 }: ProductDetailProps) {
+  const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
+
+  const product = useMemo(() => {
+    if (productProp) return productProp;
+    if (!id) return null;
+    return getProductByParamId(id) ?? null;
+  }, [productProp, id]);
+
+  const onRegresar = onRegresarProp ?? (() => navigate(-1));
+  const onAgregarCarrito = onAgregarCarritoProp ?? (() => {});
+  const onToggleWishlist = onToggleWishlistProp ?? (() => {});
+  const onVerProducto = onVerProductoProp ?? (() => {});
+
   const [cantidad, setCantidad] = useState(1);
   const [imagenSeleccionada, setImagenSeleccionada] = useState(0);
   const [tabActiva, setTabActiva] = useState("descripcion");

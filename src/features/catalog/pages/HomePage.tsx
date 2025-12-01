@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { ProductCard } from "../components/ProductCard";
+import { fetchProducts } from "@/features/catalog/services/products.api";
+import { fetchServices } from "../services/services.api";
 import { FilterPanel } from "../components/FilterPanel";
 import { SortDropdown, SortOption } from "../components/SortDropdown";
 import { Button } from "@/shared/ui/button";
@@ -13,57 +15,10 @@ import { useAuth } from "@/app/providers/AuthContext";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 import api from "@/shared/lib/axios";
 import { useNavigate } from "react-router-dom";
-
-
-
-
-interface Service {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviewCount: number;
-  image: string;
-  category: string;
-  duration: string;
-  description?: string;
-  tallerId?: string;
-  tallerNombre?: string;
-  ciudad?: string;
-  telefono?: string;
-  whatsapp?: string;
-  especialidad?: string;
-  isPromoted?: boolean;
-  isUrgent?: boolean;
-}
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviewCount: number;
-  image: string;
-  category: string;
-  brand: string;
-  compatibility: string[];
-  isNew?: boolean;
-  isSale?: boolean;
-  salePercentage?: number;
-  description?: string;
-  tallerId?: string;
-  tallerNombre?: string;
-}
-
-interface FilterState {
-  categories: string[];
-  priceRange: [number, number];
-  minRating: number;
-  brand: string[];
-  compatibility: string[];
-}
+import { Product } from "../types/product";
+import { Service } from "../types/service";
+import { productFilter } from "../types/product";
+import { serviceFilter } from "../types/service";
 
 interface ProductCatalogueProps {
   onVerPerfil?: (taller: any) => void;
@@ -74,263 +29,6 @@ interface ProductCatalogueProps {
   onIniciarChat?: (taller: any) => void;
   wishlistItems?: any[];
 }
-
-//TODO: llamada a productos
-const mockProducts: Product[] = [
-  {
-    id: "brake_001",
-    name: "Pastillas de Freno Cerámicas Premium Bosch",
-    price: 89,
-    originalPrice: 119,
-    rating: 4.8,
-    reviewCount: 234,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=500&fit=crop",
-    category: "frenos",
-    brand: "bosch",
-    compatibility: ["honda", "toyota", "nissan"],
-    isSale: true,
-    salePercentage: 25,
-    description: "Pastillas de freno cerámicas de alto rendimiento, menos ruido y mayor durabilidad",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
-  },
-  {
-    id: "engine_001",
-    name: "Filtro de Aire K&N Performance",
-    price: 45,
-    originalPrice: 65,
-    rating: 4.6,
-    reviewCount: 298,
-    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=500&fit=crop",
-    category: "motor",
-    brand: "k&n",
-    compatibility: ["universal"],
-    isSale: true,
-    salePercentage: 30,
-    description: "Filtro de aire de alto flujo, lavable y reutilizable",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
-  },
-  {
-    id: "tire_001",
-    name: "Neumáticos Urbanos Bridgestone 205/55R16",
-    price: 285,
-    originalPrice: 320,
-    rating: 4.6,
-    reviewCount: 223,
-    image: "https://images.unsplash.com/photo-1449667585940-75d7cfeae11b?w=400&h=500&fit=crop",
-    category: "neumaticos",
-    brand: "bridgestone",
-    compatibility: ["universal"],
-    isSale: true,
-    salePercentage: 11,
-    description: "Neumáticos para ciudad con excelente durabilidad y confort",
-    tallerId: "2",
-    tallerNombre: "TallerPro Guayaquil"
-  },
-  {
-    id: "elec_001",
-    name: "Batería Bosch S4 12V 60Ah",
-    price: 120,
-    rating: 4.6,
-    reviewCount: 289,
-    image: "https://images.unsplash.com/photo-1620064723069-5e2b2bd2102f?w=400&h=500&fit=crop",
-    category: "electrico",
-    brand: "bosch",
-    compatibility: ["universal"],
-    description: "Batería libre de mantenimiento con 3 años de garantía",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
-  },
-  {
-    id: "susp_001",
-    name: "Amortiguadores Monroe Gas-Matic (Par)",
-    price: 180,
-    rating: 4.7,
-    reviewCount: 167,
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=500&fit=crop",
-    category: "suspension",
-    brand: "monroe",
-    compatibility: ["toyota", "honda", "nissan"],
-    description: "Amortiguadores de gas para mejor control y confort de manejo",
-    tallerId: "3",
-    tallerNombre: "MecánicaTotal Cuenca"
-  },
-  {
-    id: "engine_002",
-    name: "Aceite de Motor Sintético Mobil 1",
-    price: 35,
-    rating: 4.9,
-    reviewCount: 445,
-    image: "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=400&h=500&fit=crop",
-    category: "motor",
-    brand: "mobil1",
-    compatibility: ["universal"],
-    description: "Aceite sintético premium 5W-30 para máxima protección del motor",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
-  },
-  {
-    id: "elec_002",
-    name: "Kit de Conversión LED para Faros",
-    price: 159,
-    rating: 4.5,
-    reviewCount: 156,
-    image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=400&h=500&fit=crop",
-    category: "electrico",
-    brand: "philips",
-    compatibility: ["universal"],
-    isNew: true,
-    description: "Luces LED de alta eficiencia para mejor visibilidad nocturna",
-    tallerId: "2",
-    tallerNombre: "TallerPro Guayaquil"
-  },
-  {
-    id: "trans_001",
-    name: "Kit de Embrague Valeo",
-    price: 280,
-    originalPrice: 350,
-    rating: 4.7,
-    reviewCount: 123,
-    image: "https://images.unsplash.com/photo-1559992290-8b72b62aeca8?w=400&h=500&fit=crop",
-    category: "transmision",
-    brand: "valeo",
-    compatibility: ["ford", "chevrolet", "fiat"],
-    isSale: true,
-    salePercentage: 20,
-    description: "Kit completo de embrague para transmisión manual",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
-  }
-];
-
-// TODO: llamada a servicios
-const mockServices: Service[] = [
-  {
-    id: "service_001",
-    name: "Cambio de Aceite y Filtros Premium",
-    price: 45,
-    originalPrice: 60,
-    rating: 4.9,
-    reviewCount: 328,
-    image: "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=400&h=500&fit=crop",
-    category: "mantenimiento",
-    duration: "30 min",
-    description: "Cambio de aceite sintético premium con filtro de aceite y revisión general de 21 puntos",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito",
-    ciudad: "Quito",
-    telefono: "+593-2-245-6789",
-    whatsapp: "+593-99-123-4567",
-    especialidad: "Mantenimiento Preventivo",
-    isPromoted: true
-  },
-  {
-    id: "service_002",
-    name: "Diagnóstico Computarizado Completo",
-    price: 25,
-    rating: 4.8,
-    reviewCount: 156,
-    image: "https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?w=400&h=500&fit=crop",
-    category: "diagnostico",
-    duration: "45 min",
-    description: "Diagnóstico completo con scanner profesional, revisión de códigos de error y reporte detallado",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito",
-    ciudad: "Quito",
-    telefono: "+593-2-245-6789",
-    whatsapp: "+593-99-123-4567",
-    especialidad: "Diagnóstico Electrónico"
-  },
-  {
-    id: "service_003",
-    name: "Revisión de Frenos Integral",
-    price: 35,
-    rating: 4.7,
-    reviewCount: 289,
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=500&fit=crop",
-    category: "frenos",
-    duration: "60 min",
-    description: "Revisión completa de pastillas, discos, líquido de frenos y calibración del sistema",
-    tallerId: "2",
-    tallerNombre: "TallerPro Guayaquil",
-    ciudad: "Guayaquil",
-    telefono: "+593-4-289-3456",
-    whatsapp: "+593-98-765-4321",
-    especialidad: "Sistema de Frenos"
-  },
-  {
-    id: "service_004",
-    name: "Alineación 3D Computarizada",
-    price: 25,
-    rating: 4.9,
-    reviewCount: 198,
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=400&h=500&fit=crop",
-    category: "suspension",
-    duration: "45 min",
-    description: "Alineación de precisión con tecnología 3D, balanceado de llantas incluido",
-    tallerId: "3",
-    tallerNombre: "MecánicaTotal Cuenca",
-    ciudad: "Cuenca",
-    telefono: "+593-7-405-7890",
-    whatsapp: "+593-96-789-0123",
-    especialidad: "Suspensión y Dirección",
-    isUrgent: true
-  },
-  {
-    id: "service_005",
-    name: "Mantenimiento de Transmisión",
-    price: 80,
-    originalPrice: 100,
-    rating: 4.6,
-    reviewCount: 67,
-    image: "https://images.unsplash.com/photo-1559992290-8b72b62aeca8?w=400&h=500&fit=crop",
-    category: "transmision",
-    duration: "90 min",
-    description: "Cambio de aceite de transmisión, revisión de embrague y ajustes necesarios",
-    tallerId: "4",
-    tallerNombre: "ExpressAuto Ambato",
-    ciudad: "Ambato",
-    telefono: "+593-3-242-1890",
-    whatsapp: "+593-97-456-7890",
-    especialidad: "Transmisión Manual y Automática"
-  },
-  {
-    id: "service_006",
-    name: "Revisión Pre-ITV Completa",
-    price: 40,
-    rating: 4.8,
-    reviewCount: 234,
-    image: "https://images.unsplash.com/photo-1632823469652-6ac2ce2e7351?w=400&h=500&fit=crop",
-    category: "revision",
-    duration: "75 min",
-    description: "Revisión integral preparatoria para la Inspección Técnica Vehicular",
-    tallerId: "5",
-    tallerNombre: "AutoTech Manta",
-    ciudad: "Manta",
-    telefono: "+593-5-262-3456",
-    whatsapp: "+593-95-234-5678",
-    especialidad: "Inspección Vehicular",
-    isPromoted: true
-  },
-  {
-    id: "service_007",
-    name: "Servicio de A/C y Climatización",
-    price: 55,
-    rating: 4.7,
-    reviewCount: 145,
-    image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400&h=500&fit=crop",
-    category: "climatizacion",
-    duration: "60 min",
-    description: "Revisión, recarga y mantenimiento completo del sistema de aire acondicionado",
-    tallerId: "6",
-    tallerNombre: "ClimaCar Loja",
-    ciudad: "Loja",
-    telefono: "+593-7-257-4567",
-    whatsapp: "+593-94-567-8901",
-    especialidad: "Aire Acondicionado"
-  }
-];
 
 // TODO: llamadas a detalles de talleres 
 const talleresDestacados = [
@@ -450,17 +148,46 @@ const talleresDestacados = [
     return stars;
   };
   export function HomePage() {
+    //TODO: llamada a productos
+    const [products, setProducts] = useState<Product[]>([]);
+    const isLoadingProducts = products.length === 0;
+
+    useEffect(() => {
+      let alive = true;
+      fetchProducts().then((data) => {
+       if (alive) setProducts(data as unknown as Product[]);
+      });
+      return () => {alive = false;};
+    }, []);
+
+    //TODO: llamada a servicios
+    const [services, setServices] = useState<Service[]>([]);
+
+    useEffect(() => {
+      fetchServices().then((data) => setServices(data as Service[]));
+    }, []);
+
   const { usuario } = useAuth();
   const navigate = useNavigate();
 
   const [tabActiva, setTabActiva] = useState<"productos" | "servicios">("productos");
-  const [filters, setFilters] = useState<FilterState>({
+  
+  const [productFilters, setProductFilters] = useState<productFilter>({
     categories: [],
     priceRange: [0, 500],
     minRating: 0,
     brand: [],
     compatibility: [],
   });
+
+  const [serviceFilters, setServiceFilters] = useState<serviceFilter>({
+    categories: [],
+    priceRange: [0, 500],
+    minRating: 0,
+    brand: [],
+    compatibility: [],
+  });
+
   const [sortBy, setSortBy] = React.useState<SortOption>("relevance");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -478,38 +205,38 @@ const talleresDestacados = [
   };
 
   const handleIrCarrito = () => {
-    navigate("/carrito");
+    navigate(`/carrito`);
   };
 
   const handleLogin = () => {
-    navigate("/login");
+    navigate(`/login`);
   };
 
   const carrosUsuario = usuario?.carros || [];
 
   const filteredAndSortedProducts = useMemo(() => {
-  let result = [...mockProducts];
+  let result = [...products];
 
-  if (filters.categories.length > 0) {
-    result = result.filter(product => filters.categories.includes(product.category));
+  if (productFilters.categories.length > 0) {
+    result = result.filter(p => productFilters.categories.includes(p.category));
   }
 
-  if (filters.brand.length > 0) {
-    result = result.filter(product => filters.brand.includes(product.brand));
+  if (productFilters.brand.length > 0) {
+    result = result.filter(p => productFilters.brand.includes(p.brand));
   }
 
-  if (filters.compatibility.length > 0) {
-    result = result.filter(product => 
-      filters.compatibility.some(compat => product.compatibility.includes(compat))
+  if (productFilters.compatibility.length > 0) {
+    result = result.filter(p => 
+      productFilters.compatibility.some(compat => p.compatibility.includes(compat))
     );
   }
 
-  result = result.filter(product => 
-    product.price >= filters.priceRange[0] && product.price <= filters.priceRange[1]
+  result = result.filter(p => 
+    p.price >= productFilters.priceRange[0] && p.price <= productFilters.priceRange[1]
   );
 
-  if (filters.minRating > 0) {
-    result = result.filter(product => product.rating >= filters.minRating);
+  if (productFilters.minRating > 0) {
+    result = result.filter(p => p.rating >= productFilters.minRating);
   }
 
   // Apply sorting
@@ -560,23 +287,23 @@ const talleresDestacados = [
   }
 
   return result;
-}, [filters, sortBy, carrosUsuario]);
+}, [products, productFilters, sortBy, carrosUsuario]);
 
 //   // Filter and sort services
 const filteredAndSortedServices = useMemo(() => {
-  let result = [...mockServices];
+  let result = [...services];
   
   // Apply basic filtering for services
-  if (filters.categories.length > 0) {
-    result = result.filter(service => filters.categories.includes(service.category));
+  if (serviceFilters.categories.length > 0) {
+    result = result.filter(service => serviceFilters.categories.includes(service.category));
   }
   
   result = result.filter(service => 
-    service.price >= filters.priceRange[0] && service.price <= filters.priceRange[1]
+    service.price >= serviceFilters.priceRange[0] && service.price <= serviceFilters.priceRange[1]
   );
 
-  if (filters.minRating > 0) {
-    result = result.filter(service => service.rating >= filters.minRating);
+  if (serviceFilters.minRating > 0) {
+    result = result.filter(service => service.rating >= serviceFilters.minRating);
   }
 
   // Apply sorting
@@ -604,11 +331,11 @@ const filteredAndSortedServices = useMemo(() => {
   }
 
   return result;
-}, [filters, sortBy]);
+}, [services, serviceFilters, sortBy]);
 
 const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
 const handleWishlistToggle = async (productId: string) => {
-  const product = mockProducts.find(p => p.id === productId);
+  const product = products.find(p => p.id === productId);
   if (!product) return;
 
   const isInWishlist = wishlistItems.some(item => item.id === productId);
@@ -632,7 +359,7 @@ const handleWishlistToggle = async (productId: string) => {
 const handleViewProduct = (id: string) => navigate(`/productos/${id}`);
 const [cartItems, setCartItems] = useState<Product[]>([]);
 const handleAddToCart = async (productId: string) => {
-  const product = mockProducts.find(p => p.id === productId);
+  const product = products.find(p => p.id === productId);
   if (!product) return;
 
   const isInCart = cartItems.some(item => item.id === productId);
@@ -735,8 +462,8 @@ const handleIniciarChat = (taller: any) => {
             {/* Desktop Filter Panel */}
             <div className="hidden lg:block flex-shrink-0">
               <FilterPanel
-                filters={filters}
-                onFiltersChange={setFilters}
+                filters={productFilters}
+                onFiltersChange={setProductFilters}
               />
             </div>
 
@@ -756,8 +483,8 @@ const handleIniciarChat = (taller: any) => {
                     <SheetContent side="left" className="w-80 p-0">
                       <div className="p-4">
                         <FilterPanel
-                          filters={filters}
-                          onFiltersChange={setFilters}
+                          filters={productFilters}
+                          onFiltersChange={setProductFilters}
                           isMobile={true}
                         />
                       </div>
@@ -795,7 +522,7 @@ const handleIniciarChat = (taller: any) => {
               {filteredAndSortedProducts.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">No se encontraron repuestos que coincidan con tus filtros.</p>
-                  <Button variant="outline" onClick={() => setFilters({
+                  <Button variant="outline" onClick={() => setProductFilters({
                     categories: [],
                     brand: [],
                     compatibility: [],
@@ -834,8 +561,8 @@ const handleIniciarChat = (taller: any) => {
             {/* Desktop Filter Panel para servicios */}
             <div className="hidden lg:block flex-shrink-0">
               <FilterPanel
-                filters={filters}
-                onFiltersChange={setFilters}
+                filters={serviceFilters}
+                onFiltersChange={setServiceFilters}
                 isServiceMode={true}
               />
             </div>
@@ -856,8 +583,8 @@ const handleIniciarChat = (taller: any) => {
                     <SheetContent side="left" className="w-80 p-0">
                       <div className="p-4">
                         <FilterPanel
-                          filters={filters}
-                          onFiltersChange={setFilters}
+                          filters={serviceFilters}
+                          onFiltersChange={setServiceFilters}
                           isMobile={true}
                           isServiceMode={true}
                         />
@@ -876,7 +603,7 @@ const handleIniciarChat = (taller: any) => {
               {filteredAndSortedServices.length === 0 ? (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">No se encontraron servicios que coincidan con tus filtros.</p>
-                  <Button variant="outline" onClick={() => setFilters({
+                  <Button variant="outline" onClick={() => setServiceFilters({
                     categories: [],
                     brand: [],
                     compatibility: [],
