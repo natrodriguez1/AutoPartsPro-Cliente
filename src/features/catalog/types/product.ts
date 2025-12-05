@@ -1,23 +1,28 @@
-export type Product = {
-    id: string;
-    name: string;
-    price: number;
-    originalPrice?: number;
+export type ProductCore = {
+  id: string;
+  name: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  category: string;
+  isSale?: boolean;
+  salePercentage?: number;
+};
+
+export type Product = ProductCore &{
     rating: number;
     reviewCount: number;
-    image: string;
-    category: string;
     brand: string;
     compatibility: string[];
     isNew?: boolean;
-    isSale?: boolean;
-    salePercentage?: number;
     description?: string;
     tallerId?: string;
     tallerNombre?: string;
 }
 
-export type productFilter = {
+export type SearchProduct = ProductCore;
+
+export type ProductFilter = {
     categories: string[];
     priceRange: [number, number];
     minRating: number;

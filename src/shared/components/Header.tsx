@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Car, LogOut, Home, Settings, Heart, Package, CreditCard, MapPin, Bell, Shield } from "lucide-react";
+import { Search, ShoppingCart, User, Car, LogOut, Home, Settings, Heart, Package, CreditCard, MapPin, Bell, Shield, LogIn, UserPlus } from "lucide-react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Badge } from "../ui/badge";
@@ -7,6 +7,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { useAuth } from "@/app/providers/AuthContext";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useMemo, useEffect } from "react";
+import { useCart } from "@/features/cart/store/cart.store";
+import { Product } from "@/features/catalog/types/product";
 
 interface HeaderProps {
   cartItemsCount?: number;
@@ -19,34 +21,16 @@ interface HeaderProps {
   onIrPedidos?: () => void;
   onIrConfiguracion?: () => void;
 }
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  rating: number;
-  reviewCount: number;
-  image: string;
-  category: string;
-  brand: string;
-  compatibility: string[];
-  isNew?: boolean;
-  isSale?: boolean;
-  salePercentage?: number;
-  description?: string;
-  tallerId?: string;
-  tallerNombre?: string;
-}
 
 export function Header() {
   const { usuario, cerrarSesion } = useAuth();
-  const [cartItems] = useState<Product[]>([]);
-  const cartItemsCount = cartItems.length;
+  const items = useCart((s) => s.items);
+  const cartItemsCount = items.reduce((acc, it) => acc + (it.cantidad ?? 0), 0);
   const navigate = useNavigate();
 
   const handleLogout = () => {
     cerrarSesion();
-    navigate("/");
+    navigate("/login");
   };
   const handleIrHome = () => {
     navigate("/");
@@ -263,9 +247,23 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            <Button variant="ghost" size="sm">
-              <User className="h-5 w-5" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" aria-label="Cuenta">
+                  <User className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent className="w-52" align="end">
+                <DropdownMenuLabel className="text-sm">Tu cuenta</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+
+                <DropdownMenuItem onClick={() => navigate("/login")}>
+                  <LogIn className="mr-0.5 h-4 w-4" />
+                  <span>Inicia sesión o Regístrate</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </div>

@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useCart } from "../store/cart.store";
+import type { SearchProduct } from "@/features/catalog/types/product";
+import { useNavigate } from "react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
@@ -25,7 +28,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "motion/react";
 
 // Productos adicionales para búsqueda
-const productosDisponibles = [
+const productosDisponibles: SearchProduct[] = [
   {
     id: "new1",
     name: "Filtro de Aire K&N Performance",
@@ -62,31 +65,23 @@ const productosDisponibles = [
   }
 ];
 
-interface CarritoProps {
-  items: any[];
-  wishlistItems: any[];
-  itemsEliminados: any[];
-  onRegresar: () => void;
-  onActualizar: (items: any[]) => void;
-  onIrCheckout: () => void;
-  onEliminar: (id: string) => void;
-  onRestaurar: (id: string) => void;
-  onToggleWishlist: (producto: any) => void;
-  onAgregarCarrito: (producto: any) => void;
-}
+export function CartPage() {
+  const navigate = useNavigate();
 
-export function CartPage({ 
-  items, 
-  wishlistItems,
-  itemsEliminados,
-  onRegresar, 
-  onActualizar,
-  onIrCheckout,
-  onEliminar,
-  onRestaurar,
-  onToggleWishlist,
-  onAgregarCarrito
-}: CarritoProps) {
+  const items = useCart((s) => s.items);
+
+  const wishlistItems = useCart((s) => s.wishlistItems);
+  const itemsEliminados = useCart((s) => s.itemsEliminados);
+
+  const add = useCart((s) => s.add);
+  const remove = useCart((s) => s.remove);
+  const restore = useCart((s) => s.restore);
+  const updateQty = useCart((s) => s.updateQty);
+  const toggleWishlist = useCart((s) => s.toggleWishlist);
+
+  const onRegresar = () => navigate(-1);
+  const onIrCheckout = () => navigate("/checkout");
+
   const [codigoDescuento, setCodigoDescuento] = useState("");
   const [descuentoAplicado, setDescuentoAplicado] = useState(0);
   const [busquedaProducto, setBusquedaProducto] = useState("");
@@ -94,14 +89,11 @@ export function CartPage({
 
   const actualizarCantidad = (id: string, nuevaCantidad: number) => {
     if (nuevaCantidad <= 0) {
-      onEliminar(id);
+      remove(id);
       return;
     }
-    
-    const nuevosItems = items.map(item => 
-      item.id === id ? { ...item, cantidad: nuevaCantidad } : item
-    );
-    onActualizar(nuevosItems);
+
+    updateQty(id, nuevaCantidad);
   };
 
   const aplicarDescuento = () => {
@@ -188,7 +180,7 @@ export function CartPage({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onRestaurar(item.id)}
+                      onClick={() => restore(item.id)}
                     >
                       <Undo className="h-3 w-3 mr-1" />
                       Deshacer
@@ -284,7 +276,7 @@ export function CartPage({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => onToggleWishlist(item)}
+                                onClick={() => toggleWishlist(item)}
                                 className="text-red-500 hover:text-red-600"
                               >
                                 <Heart className="h-4 w-4" />
@@ -292,7 +284,7 @@ export function CartPage({
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => onEliminar(item.id)}
+                                onClick={() => remove(item.id)}
                                 className="text-destructive hover:text-destructive"
                               >
                                 <Trash2 className="h-4 w-4" />
@@ -352,14 +344,14 @@ export function CartPage({
                           <div className="flex flex-col gap-2">
                             <Button
                               size="sm"
-                              onClick={() => onAgregarCarrito(item)}
+                              onClick={() => add(item)}
                             >
                               Agregar al Carrito
                             </Button>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => onToggleWishlist(item)}
+                              onClick={() => toggleWishlist(item)}
                               className="text-red-500 hover:text-red-600"
                             >
                               <X className="h-4 w-4" />
@@ -419,7 +411,7 @@ export function CartPage({
                             <Button
                               size="sm"
                               onClick={() => {
-                                onAgregarCarrito(producto);
+                                add(producto);
                                 toast.success(`${producto.name} agregado al carrito`);
                               }}
                             >
@@ -428,7 +420,7 @@ export function CartPage({
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => onToggleWishlist(producto)}
+                              onClick={() => toggleWishlist(producto)}
                               className="text-red-500 hover:text-red-600"
                             >
                               <Heart className="h-4 w-4" />

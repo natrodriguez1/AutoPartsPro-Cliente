@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useCart } from "@/features/cart/store/cart.store";
 import { ProductCard } from "../components/ProductCard";
 import { fetchProducts } from "@/features/catalog/services/products.api";
 import { fetchServices } from "../services/services.api";
@@ -17,18 +18,8 @@ import api from "@/shared/lib/axios";
 import { useNavigate } from "react-router-dom";
 import { Product } from "../types/product";
 import { Service } from "../types/service";
-import { productFilter } from "../types/product";
+import { ProductFilter } from "../types/product";
 import { serviceFilter } from "../types/service";
-
-interface ProductCatalogueProps {
-  onVerPerfil?: (taller: any) => void;
-  onAgregarCarrito?: (producto: any) => void;
-  onToggleWishlist?: (producto: any) => void;
-  onVerProducto?: (producto: any) => void;
-  onVerServicio?: (servicio: any) => void;
-  onIniciarChat?: (taller: any) => void;
-  wishlistItems?: any[];
-}
 
 // TODO: llamadas a detalles de talleres 
 const talleresDestacados = [
@@ -172,7 +163,7 @@ const talleresDestacados = [
 
   const [tabActiva, setTabActiva] = useState<"productos" | "servicios">("productos");
   
-  const [productFilters, setProductFilters] = useState<productFilter>({
+  const [productFilters, setProductFilters] = useState<ProductFilter>({
     categories: [],
     priceRange: [0, 500],
     minRating: 0,
@@ -333,51 +324,42 @@ const filteredAndSortedServices = useMemo(() => {
   return result;
 }, [services, serviceFilters, sortBy]);
 
-const [wishlistItems, setWishlistItems] = useState<Product[]>([]);
+const wishlistItems = useCart((s) => s.wishlistItems);
+const toggleWishlist = useCart((s) => s.toggleWishlist);
+
 const handleWishlistToggle = async (productId: string) => {
   const product = products.find(p => p.id === productId);
   if (!product) return;
 
   const isInWishlist = wishlistItems.some(item => item.id === productId);
+  toggleWishlist(product);
 
-  try {
-    if (isInWishlist) {
-      await api.delete(`/api/wishlist/${productId}`);
-      setWishlistItems(prev => prev.filter(item => item.id !== productId));
-      toast.success(`${product.name} eliminado de favoritos`);
-    } else {
-      await api.post("/api/wishlist", { productId });
-      setWishlistItems(prev => [...prev, product]);
-      toast.success(`${product.name} agregado a favoritos`);
-    }
-  } catch (error) {
-    console.error(error);
-    toast.error("Hubo un problema al actualizar favoritos");
-  }
+  toast.success(
+    isInWishlist
+      ? `${product.name} eliminado de favoritos`
+      : `${product.name} agregado a favoritos`
+  );
 };
 
 const handleViewProduct = (id: string) => navigate(`/productos/${id}`);
-const [cartItems, setCartItems] = useState<Product[]>([]);
+
+const cartItems = useCart((s) => s.items);
+const addToCart = useCart((s) => s.add);
+
 const handleAddToCart = async (productId: string) => {
   const product = products.find(p => p.id === productId);
   if (!product) return;
 
   const isInCart = cartItems.some(item => item.id === productId);
 
-  try {
-    if (isInCart) {
-      await api.delete(`/api/cart/${productId}`);
-      setCartItems(prev => prev.filter(item => item.id !== productId));
-      toast.success(`${product.name} eliminado de favoritos`);
-    } else {
-      await api.post(`/api/cart/${productId}`);
-      setCartItems(prev => [...prev, product]);
-      toast.success(`${product.name} agregado a favoritos`);
-    }
-  } catch (error) {
-    console.error(error);
-    toast.error("Hubo un problema al actualizar favoritos");
-  }
+  // si ya está, suma cantidad; si no, lo agrega con cantidad 1
+  addToCart(product, 1);
+
+  toast.success(
+    isInCart
+      ? `Se aumentó la cantidad de ${product.name}`
+      : `${product.name} agregado al carrito`
+  );
 };
 
 

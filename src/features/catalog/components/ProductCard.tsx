@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Product } from "../types/product";
 import { Heart, ShoppingCart, Star, MessageCircle, Award, CheckCircle, Eye, Globe } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
@@ -7,23 +8,7 @@ import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 import { toast } from "sonner";
 
 interface ProductCardProps {
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    originalPrice?: number;
-    rating: number;
-    reviewCount: number;
-    image: string;
-    isNew?: boolean;
-    isSale?: boolean;
-    salePercentage?: number;
-    description?: string;
-    tallerId?: string;
-    tallerNombre?: string;
-    compatibility?: string[];
-    brand?: string;
-  };
+  product: Product;
   onAddToCart: (productId: string) => void;
   onWishlistToggle: (productId: string) => void;
   onVerProducto: (productId: string) => void;

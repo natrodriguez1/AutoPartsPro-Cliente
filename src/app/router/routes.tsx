@@ -53,7 +53,7 @@ export const router = createBrowserRouter([
             ) },
             { path: 'perfil', element: (
                 <RoleRoute roles={['usuario']}>
-                <UserProfilePage />
+                    <UserProfilePage />
                 </RoleRoute>
             ) },
         ],
@@ -62,7 +62,7 @@ export const router = createBrowserRouter([
         path: '/taller',
         element: (
             <RoleRoute roles={['taller']}>
-            <TallerLayout />
+                <TallerLayout />
             </RoleRoute>
         ),
         children: [
