@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import type { Carro, Usuario } from "@/app/types/auth";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -32,33 +33,10 @@ import { toast } from "sonner";
 import { Switch } from "@/shared/ui/switch";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 
-// Tipos mínimos (para no depender de tus types internos)
-type Carro = {
-  id: string;
-  marca: string;
-  modelo: string;
-  año: number;
-  motor?: string;
-  combustible?: string;
-  kilometraje?: number;
-  vin?: string;
-  color?: string;
-  fechaCompra?: string;
-};
-
-type UsuarioAuth = {
-  tipo: "usuario" | "taller" | "admin";
-  nombres?: string;
-  nombre?: string;
-  email?: string;
-  telefono?: string;
-  carros?: Carro[];
-};
-
 type PerfilTab = "personal" | "carros" | "pedidos" | "direcciones" | "configuracion";
 
 interface ProfileTabsProps {
-  usuario: UsuarioAuth;
+  usuario: Usuario;
   tabActiva: PerfilTab;
   onTabChange: (tab: string) => void;
   onRegresar: () => void;

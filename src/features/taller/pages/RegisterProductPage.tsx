@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -20,12 +21,14 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-interface RegistroProductosProps {
-  onRegresar: () => void;
-  onCambiarVista: (vista: string) => void;
-}
+export function RegisterProductPage() {
 
-export function RegisterProductPage({ onRegresar, onCambiarVista }: RegistroProductosProps) {
+  const navigate = useNavigate();
+
+  const handleRegresar = () => {
+    navigate("/taller/inventario");
+  };
+
   const [producto, setProducto] = useState({
     nombre: "",
     codigo: "",
@@ -83,7 +86,7 @@ export function RegisterProductPage({ onRegresar, onCambiarVista }: RegistroProd
     }
 
     toast.success(`Producto "${producto.nombre}" registrado exitosamente`);
-    onRegresar();
+    handleRegresar();
   };
 
   const agregarCompatibilidad = () => {
@@ -124,7 +127,7 @@ export function RegisterProductPage({ onRegresar, onCambiarVista }: RegistroProd
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" onClick={onRegresar}>
+        <Button variant="ghost" onClick={handleRegresar}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver al Inventario
         </Button>
@@ -429,7 +432,7 @@ export function RegisterProductPage({ onRegresar, onCambiarVista }: RegistroProd
                 <Save className="h-4 w-4 mr-2" />
                 Guardar Producto
               </Button>
-              <Button type="button" variant="outline" onClick={onRegresar} className="w-full">
+              <Button type="button" variant="outline" onClick={handleRegresar} className="w-full">
                 Cancelar
               </Button>
             </div>

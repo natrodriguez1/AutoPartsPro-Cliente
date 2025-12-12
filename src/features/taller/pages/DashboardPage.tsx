@@ -1,30 +1,56 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { 
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart, Line, PieChart, Pie, Cell
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Package, 
-  DollarSign, 
-  Calendar,
+import {
+  TrendingUp,
+  Users,
+  Package,
+  DollarSign,
   MessageCircle,
   ArrowUpRight,
-  Clock,
+  Wrench,
   Settings,
   ShoppingCart,
-  FileText,
-  Wrench,
-  Shield
+  Shield,
 } from "lucide-react";
 
-// TODO: llamar a ventas por mes
-const ventasPorMes = [
+// TIP: en el futuro estos tipos los puedes mover a src/features/taller/types/dashboard.ts
+type VentaPorMes = {
+  mes: string;
+  ventas: number;
+  piezas: number;
+};
+
+type CategoriaMasVendida = {
+  categoria: string;
+  valor: number;
+  color: string;
+};
+
+type TallerCercano = {
+  id: string;
+  nombre: string;
+  distancia: string;
+  rating: number;
+  especialidad: string;
+};
+
+// TODO: reemplazar por datos del backend (ej. llamada a /api/taller/dashboard)
+const ventasPorMes: VentaPorMes[] = [
   { mes: "Ene", ventas: 12000, piezas: 45 },
   { mes: "Feb", ventas: 15000, piezas: 52 },
   { mes: "Mar", ventas: 18000, piezas: 68 },
@@ -32,32 +58,41 @@ const ventasPorMes = [
   { mes: "May", ventas: 19000, piezas: 61 },
   { mes: "Jun", ventas: 25000, piezas: 89 },
 ];
-//TODO: llamar a categorias mas vendidas
-const categoriasMasVendidas = [
+
+const categoriasMasVendidas: CategoriaMasVendida[] = [
   { categoria: "Frenos", valor: 35, color: "#8884d8" },
   { categoria: "Motor", valor: 25, color: "#82ca9d" },
   { categoria: "Neumáticos", valor: 20, color: "#ffc658" },
   { categoria: "Suspensión", valor: 12, color: "#ff7c7c" },
   { categoria: "Otros", valor: 8, color: "#8dd1e1" },
 ];
-//TODO: llamar a top 4 talleres más cercanos
-const talleresCercanos = [
+
+const talleresCercanos: TallerCercano[] = [
   { id: "1", nombre: "AutoMaster", distancia: "2.3 km", rating: 4.8, especialidad: "Motor" },
   { id: "2", nombre: "TallerPro", distancia: "3.1 km", rating: 4.6, especialidad: "Frenos" },
   { id: "3", nombre: "MecánicaTotal", distancia: "4.5 km", rating: 4.7, especialidad: "Suspensión" },
   { id: "4", nombre: "AutoExpress", distancia: "5.2 km", rating: 4.5, especialidad: "Neumáticos" },
 ];
 
+// Ya NO recibe props: es una página de ruta pura
+export function TallerDashboard() {
+  const navigate = useNavigate();
 
+  // Helpers de navegación dentro del módulo /taller
+  const goToInventario = () => navigate("/taller/inventario");
+  const goToServicios = () => navigate("/taller/servicios");
 
-interface PanelTallerProps {
-  onCambiarVista: (vista: string) => void;
-  onAgregarCarrito?: (producto: any) => void;
-  onVerPerfil?: (taller: any) => void;
-  onIniciarChat?: (taller: any) => void;
-}
+  const goToOrdenes = () => navigate("/taller/ordenes");
 
-export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil, onIniciarChat }: PanelTallerProps) {
+  const goToUsuarios = () => navigate("/taller/usuarios");
+
+  const goToChat = (tallerId: string) => {
+    navigate(`/taller/chat/${tallerId}`);
+  };
+  const goToPerfil = (tallerId: string) => {
+    navigate(`/taller/perfil/${tallerId}`);
+  };
+
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="mb-6">
@@ -80,10 +115,10 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               className="h-auto flex flex-col gap-2 p-4"
-              onClick={() => onCambiarVista("inventario")}
+              onClick={goToInventario}
             >
               <Package className="h-8 w-8 text-primary" />
               <div className="text-center">
@@ -91,11 +126,11 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
                 <div className="text-xs text-muted-foreground">Productos y stock</div>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               className="h-auto flex flex-col gap-2 p-4"
-              onClick={() => onCambiarVista("ordenes")}
+              onClick={goToOrdenes}
             >
               <ShoppingCart className="h-8 w-8 text-primary" />
               <div className="text-center">
@@ -103,11 +138,11 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
                 <div className="text-xs text-muted-foreground">Pedidos de clientes</div>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               className="h-auto flex flex-col gap-2 p-4"
-              onClick={() => onCambiarVista("gestion-usuarios")}
+              onClick={goToUsuarios}
             >
               <Users className="h-8 w-8 text-primary" />
               <div className="text-center">
@@ -115,11 +150,11 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
                 <div className="text-xs text-muted-foreground">Roles y permisos</div>
               </div>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               className="h-auto flex flex-col gap-2 p-4"
-              onClick={() => onCambiarVista("servicios")}
+              onClick={goToServicios}
             >
               <Wrench className="h-8 w-8 text-primary" />
               <div className="text-center">
@@ -137,6 +172,7 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
           <TabsTrigger value="red">Red de Talleres</TabsTrigger>
         </TabsList>
 
+        {/* === TAB DASHBOARD === */}
         <TabsContent value="dashboard" className="space-y-6">
           {/* Métricas principales */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -242,7 +278,6 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
-                      fill="#8884d8"
                       dataKey="valor"
                       label={({ categoria, valor }) => `${categoria} ${valor}%`}
                     >
@@ -258,6 +293,7 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
           </div>
         </TabsContent>
 
+        {/* === TAB RED DE TALLERES === */}
         <TabsContent value="red" className="space-y-6">
           <Card>
             <CardHeader>
@@ -269,7 +305,10 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
             <CardContent>
               <div className="space-y-4">
                 {talleresCercanos.map((taller) => (
-                  <div key={taller.id} className="flex items-center justify-between p-4 border rounded-lg">
+                  <div
+                    key={taller.id}
+                    className="flex items-center justify-between p-4 border rounded-lg"
+                  >
                     <div className="flex items-center space-x-4">
                       <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                         <Users className="h-5 w-5 text-primary" />
@@ -281,15 +320,15 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
                         </p>
                         <div className="flex items-center mt-1">
                           <span className="text-sm">★ {taller.rating}</span>
-                        </div>
+                        </div>  
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => onIniciarChat?.(taller)}>
+                      <Button variant="outline" size="sm" onClick={() => goToChat(taller.id)}>
                         <MessageCircle className="h-4 w-4 mr-2" />
                         Contactar
                       </Button>
-                      <Button size="sm" onClick={() => onVerPerfil?.(taller)}>
+                      <Button size="sm" onClick={() => goToPerfil(taller.id)}>
                         Ver Perfil
                         <ArrowUpRight className="h-4 w-4 ml-2" />
                       </Button>
@@ -300,8 +339,6 @@ export function TallerDashboard({ onCambiarVista, onAgregarCarrito, onVerPerfil,
             </CardContent>
           </Card>
         </TabsContent>
-
-
       </Tabs>
     </div>
   );

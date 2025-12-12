@@ -138,6 +138,7 @@ const talleresDestacados = [
     }
     return stars;
   };
+  
   export function HomePage() {
     //TODO: llamada a productos
     const [products, setProducts] = useState<Product[]>([]);
@@ -184,7 +185,7 @@ const talleresDestacados = [
 
   // Instead of using props, use router navigation:
   const handleVerPerfil = (tallerId: string) => {
-    navigate(`/taller/perfil/${tallerId}`);
+    navigate(`/perfilTaller/${tallerId}`);
   };
 
   const handleVerProducto = (productoId: string) => {
@@ -656,7 +657,7 @@ const handleIniciarChat = (taller: any) => {
 
                           <div className="text-xs text-muted-foreground flex items-center gap-1">
                             <Wrench className="h-3 w-3" />
-                            <span>Por {service.tallerNombre}</span>
+                            <span>Por {service.workshopName}</span>
                           </div>
 
                           <Button 

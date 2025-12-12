@@ -1,21 +1,15 @@
-export type Service = {
-  id: string;
-  name: string;
-  price: number;
+import type { ServiceCore } from "@/domain/service";
+
+export type Service = ServiceCore & {
   originalPrice?: number;
   rating: number;
   reviewCount: number;
-  image: string;
-  category: string;
   duration?: string;
-  description?: string;
-  tallerId?: string;
-  tallerNombre?: string;
-  ciudad?: string;
-  direccion?: string;
-  telefono?: string;
+  city?: string;
+  direction?: string;
+  phoneNumber?: string;
   whatsapp?: string;
-  especialidad?: string;
+  specialty?: string;
   isPromoted?: boolean;
   isUrgent?: boolean;
 };

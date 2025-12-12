@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/shared/ui/button";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Input } from "@/shared/ui/input";
@@ -29,158 +30,165 @@ import {
   AlertCircle
 } from "lucide-react";
 import { toast } from "sonner";
+import type { WorkshopService } from "../types/service";
+import type { ServiceHistory } from "../types/service";
 
-interface ServiciosTallerProps {
-  onRegresar: () => void;
-  onCambiarVista: (vista: string) => void;
-}
-
-//TODO: llamada a items de tipo servicio
-const serviciosItems = [
+//TODO: llamada a items de tipo service
+const services: WorkshopService[] = [
   {
     id: "srv_001",
-    codigo: "SRV-FRE-001",
-    nombre: "Cambio de Pastillas de Freno",
-    categoria: "frenos",
-    descripcion: "Cambio completo de pastillas de freno delanteras y traseras, incluye inspección del sistema de frenado",
-    duracionEstimada: 90, // en minutos
-    precio: 120,
-    disponible: true,
-    requiereRepuestos: true,
-    especialidad: "Mecánica General",
-    garantia: "6 meses",
-    ultimaActualizacion: "2024-01-20",
-    serviciosRealizados: 15,
-    calificacionPromedio: 4.8,
-    estado: "activo"
+    code: "SRV-FRE-001",
+    name: "Cambio de Pastillas de Freno",
+    category: "frenos",
+    description: "Cambio completo de pastillas de freno delanteras y traseras, incluye inspección del sistema de frenado",
+    estimatedDurationMinutes: 90, // en minutos
+    price: 120,
+    isAvailable: true,
+    requiresParts: true,
+    specialty: "Mecánica General",
+    warranty: "6 meses",
+    lastUpdatedAt: "2024-01-20",
+    completedServicesCount: 15,
+    averageRating: 4.8,
+    status: "activo"
   },
   {
     id: "srv_002",
-    codigo: "SRV-MOT-002",
-    nombre: "Cambio de Aceite y Filtros",
-    categoria: "motor",
-    descripcion: "Cambio de aceite del motor, filtro de aceite y filtro de aire. Incluye revisión de niveles de fluidos",
-    duracionEstimada: 45,
-    precio: 65,
-    disponible: true,
-    requiereRepuestos: true,
-    especialidad: "Mantenimiento",
-    garantia: "3 meses",
-    ultimaActualizacion: "2024-01-22",
-    serviciosRealizados: 42,
-    calificacionPromedio: 4.9,
-    estado: "activo"
+    code: "SRV-MOT-002",
+    name: "Cambio de Aceite y Filtros",
+    category: "motor",
+    description: "Cambio de aceite del motor, filtro de aceite y filtro de aire. Incluye revisión de niveles de fluidos",
+    estimatedDurationMinutes: 45,
+    price: 65,
+    isAvailable: true,
+    requiresParts: true,
+    specialty: "Mantenimiento",
+    warranty: "3 meses",
+    lastUpdatedAt: "2024-01-22",
+    completedServicesCount: 42,
+    averageRating: 4.9,
+    status: "activo"
   },
   {
     id: "srv_003",
-    codigo: "SRV-NEU-003",
-    nombre: "Balanceado y Alineación",
-    categoria: "neumaticos",
-    descripcion: "Balanceado de neumáticos y alineación de dirección para mejorar el manejo y durabilidad",
-    duracionEstimada: 60,
-    precio: 45,
-    disponible: true,
-    requiereRepuestos: false,
-    especialidad: "Neumáticos",
-    garantia: "1 mes",
-    ultimaActualizacion: "2024-01-19",
-    serviciosRealizados: 28,
-    calificacionPromedio: 4.6,
-    estado: "activo"
+    code: "SRV-NEU-003",
+    name: "Balanceado y Alineación",
+    category: "neumaticos",
+    description: "Balanceado de neumáticos y alineación de dirección para mejorar el manejo y durabilidad",
+    estimatedDurationMinutes: 60,
+    price: 45,
+    isAvailable: true,
+    requiresParts: false,
+    specialty: "Neumáticos",
+    warranty: "1 mes",
+    lastUpdatedAt: "2024-01-19",
+    completedServicesCount: 28,
+    averageRating: 4.6,
+    status: "activo"
   },
   {
     id: "srv_004",
-    codigo: "SRV-ELE-004",
-    nombre: "Diagnóstico Eléctrico",
-    categoria: "electrico",
-    descripcion: "Diagnóstico completo del sistema eléctrico del vehículo usando equipos especializados",
-    duracionEstimada: 120,
-    precio: 80,
-    disponible: false,
-    requiereRepuestos: false,
-    especialidad: "Electrónica Automotriz",
-    garantia: "Sin garantía (diagnóstico)",
-    ultimaActualizacion: "2024-01-18",
-    serviciosRealizados: 8,
-    calificacionPromedio: 4.7,
-    estado: "inactivo"
+    code: "SRV-ELE-004",
+    name: "Diagnóstico Eléctrico",
+    category: "electrico",
+    description: "Diagnóstico completo del sistema eléctrico del vehículo usando equipos especializados",
+    estimatedDurationMinutes: 120,
+    price: 80,
+    isAvailable: false,
+    requiresParts: false,
+    specialty: "Electrónica Automotriz",
+    warranty: "Sin garantía (diagnóstico)",
+    lastUpdatedAt: "2024-01-18",
+    completedServicesCount: 8,
+    averageRating: 4.7,
+    status: "inactivo"
   },
   {
     id: "srv_005",
-    codigo: "SRV-SUS-005",
-    nombre: "Reparación de Suspensión",
-    categoria: "suspension",
-    descripcion: "Reparación y reemplazo de componentes de suspensión incluyendo amortiguadores y resortes",
-    duracionEstimada: 180,
-    precio: 280,
-    disponible: true,
-    requiereRepuestos: true,
-    especialidad: "Suspensión",
-    garantia: "12 meses",
-    ultimaActualizacion: "2024-01-21",
-    serviciosRealizados: 12,
-    calificacionPromedio: 4.5,
-    estado: "activo"
+    code: "SRV-SUS-005",
+    name: "Reparación de Suspensión",
+    category: "suspension",
+    description: "Reparación y reemplazo de componentes de suspensión incluyendo amortiguadores y resortes",
+    estimatedDurationMinutes: 180,
+    price: 280,
+    isAvailable: true,
+    requiresParts: true,
+    specialty: "Suspensión",
+    warranty: "12 meses",
+    lastUpdatedAt: "2024-01-21",
+    completedServicesCount: 12,
+    averageRating: 4.5,
+    status: "activo"
   }
 ];
-//TODO: llamada al historial de servicios vendidos
-const historialServicios = [
+//TODO: llamada al historial de services vendidos
+const serviceHistory: ServiceHistory[] = [
   {
     id: "hist_001",
-    fecha: "2024-01-23",
-    servicio: "Cambio de Aceite y Filtros",
-    cliente: "Carlos Mendoza",
-    vehiculo: "Toyota Corolla 2020",
-    estado: "completado",
-    precio: 65,
-    calificacion: 5
+    date: "2024-01-23",
+    service: "Cambio de Aceite y Filtros",
+    customer: "Carlos Mendoza",
+    vehicle: "Toyota Corolla 2020",
+    status: "completado",
+    price: 65,
+    rating: 5
   },
   {
     id: "hist_002",
-    fecha: "2024-01-22",
-    servicio: "Cambio de Pastillas de Freno",
-    cliente: "María González",
-    vehiculo: "Honda Civic 2019",
-    estado: "en_proceso",
-    precio: 120,
-    calificacion: null
+    date: "2024-01-22",
+    service: "Cambio de Pastillas de Freno",
+    customer: "María González",
+    vehicle: "Honda Civic 2019",
+    status: "en_proceso",
+    price: 120,
+    rating: null
   },
   {
     id: "hist_003",
-    fecha: "2024-01-21",
-    servicio: "Balanceado y Alineación",
-    cliente: "Pedro Silva",
-    vehiculo: "Chevrolet Sail 2021",
-    estado: "completado",
-    precio: 45,
-    calificacion: 4
+    date: "2024-01-21",
+    service: "Balanceado y Alineación",
+    customer: "Pedro Silva",
+    vehicle: "Chevrolet Sail 2021",
+    status: "completado",
+    price: 45,
+    rating: 4
   },
   {
     id: "hist_004",
-    fecha: "2024-01-20",
-    servicio: "Reparación de Suspensión",
-    cliente: "Ana López",
-    vehiculo: "Ford Focus 2018",
-    estado: "pendiente",
-    precio: 280,
-    calificacion: null
+    date: "2024-01-20",
+    service: "Reparación de Suspensión",
+    customer: "Ana López",
+    vehicle: "Ford Focus 2018",
+    status: "pendiente",
+    price: 280,
+    rating: null
   }
 ];
 
-export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProps) {
-  const [filtroCategoria, setFiltroCategoria] = useState<string>("todos");
-  const [filtroEstado, setFiltroEstado] = useState<string>("todos");
+export function ServicesPage() {
+  const navigate = useNavigate();
+
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
+
+  const handleNuevoservice = () => {
+    navigate("/taller/registro-servicios");
+  };
+
+  const [filtrocategory, setFiltrocategory] = useState<string>("todos");
+  const [filtrostatus, setFiltrostatus] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState<string>("");
   const [mostrarDialogoEdicion, setMostrarDialogoEdicion] = useState(false);
-  const [servicioSeleccionado, setServicioSeleccionado] = useState<any>(null);
-  const [edicionServicio, setEdicionServicio] = useState({
-    precio: "",
-    disponible: true,
-    descripcion: ""
+  const [serviceSeleccionado, setserviceSeleccionado] = useState<any>(null);
+  const [edicionservice, setEdicionservice] = useState({
+    price: "",
+    isAvailable: true,
+    description: ""
   });
 
-  const getEstadoBadge = (estado: string) => {
-    switch (estado) {
+  const getstatusBadge = (status: string) => {
+    switch (status) {
       case "activo":
         return <Badge className="bg-green-500 text-white">Activo</Badge>;
       case "inactivo":
@@ -190,8 +198,8 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
     }
   };
 
-  const getEstadoServicioBadge = (estado: string) => {
-    switch (estado) {
+  const getstatusserviceBadge = (status: string) => {
+    switch (status) {
       case "completado":
         return <Badge className="bg-green-500 text-white">Completado</Badge>;
       case "en_proceso":
@@ -205,55 +213,55 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
     }
   };
 
-  const handleEditarServicio = () => {
-    if (!servicioSeleccionado || !edicionServicio.precio) {
+  const handleEditarservice = () => {
+    if (!serviceSeleccionado || !edicionservice.price) {
       toast.error("Por favor completa todos los campos");
       return;
     }
 
-    toast.success(`Servicio ${servicioSeleccionado.nombre} actualizado correctamente`);
+    toast.success(`service ${serviceSeleccionado.name} actualizado correctamente`);
     setMostrarDialogoEdicion(false);
-    setEdicionServicio({ precio: "", disponible: true, descripcion: "" });
-    setServicioSeleccionado(null);
+    setEdicionservice({ price: "", isAvailable: true, description: "" });
+    setserviceSeleccionado(null);
   };
 
-  const serviciosFiltrados = serviciosItems.filter(servicio => {
-    const coincideBusqueda = servicio.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-                            servicio.codigo.toLowerCase().includes(busqueda.toLowerCase()) ||
-                            servicio.categoria.toLowerCase().includes(busqueda.toLowerCase());
+  const servicesFiltrados = services.filter(service => {
+    const coincideBusqueda = service.name.toLowerCase().includes(busqueda.toLowerCase()) ||
+                            service.code.toLowerCase().includes(busqueda.toLowerCase()) ||
+                            service.category.toLowerCase().includes(busqueda.toLowerCase());
     
-    const coincideCategoria = filtroCategoria === "todos" || servicio.categoria === filtroCategoria;
-    const coincideEstado = filtroEstado === "todos" || servicio.estado === filtroEstado;
+    const coincidecategory = filtrocategory === "todos" || service.category === filtrocategory;
+    const coincidestatus = filtrostatus === "todos" || service.status === filtrostatus;
     
-    return coincideBusqueda && coincideCategoria && coincideEstado;
+    return coincideBusqueda && coincidecategory && coincidestatus;
   });
 
-  const serviciosActivos = serviciosItems.filter(servicio => servicio.estado === "activo");
-  const ingresosTotales = historialServicios.filter(h => h.estado === "completado").reduce((total, h) => total + h.precio, 0);
-  const serviciosCompletados = historialServicios.filter(h => h.estado === "completado").length;
-  const calificacionPromedio = serviciosItems.reduce((acc, s) => acc + s.calificacionPromedio, 0) / serviciosItems.length;
+  const servicesActivos = services.filter(service => service.status === "activo");
+  const ingresosTotales = serviceHistory.filter(h => h.status === "completado").reduce((total, h) => total + h.price, 0);
+  const servicesCompletados = serviceHistory.filter(h => h.status === "completado").length;
+  const averageRating = services.reduce((acc, s) => acc + s.averageRating, 0) / services.length;
 
   return (
     <div className="container mx-auto px-4 py-6 max-w-7xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onRegresar}>
+          <Button variant="ghost" onClick={handleRegresar}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Regresar al Panel
           </Button>
           <div>
             <h1 className="flex items-center gap-2">
               <Wrench className="h-6 w-6" />
-              Gestión de Servicios
+              Gestión de services
             </h1>
-            <p className="text-muted-foreground">Administra tu catálogo de servicios y seguimiento</p>
+            <p className="text-muted-foreground">Administra tu catálogo de services y seguimiento</p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => onCambiarVista("registro-servicios")}>
+          <Button variant="outline" onClick={handleNuevoservice}>
             <Plus className="h-4 w-4 mr-2" />
-            Nuevo Servicio
+            Nuevo servicio
           </Button>
           <Button variant="outline">
             <Download className="h-4 w-4 mr-2" />
@@ -269,8 +277,8 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
             <div className="flex items-center gap-2">
               <Wrench className="h-8 w-8 text-primary" />
               <div>
-                <p className="text-sm text-muted-foreground">Servicios Activos</p>
-                <p className="text-2xl font-bold">{serviciosActivos.length}</p>
+                <p className="text-sm text-muted-foreground">services Activos</p>
+                <p className="text-2xl font-bold">{servicesActivos.length}</p>
               </div>
             </div>
           </CardContent>
@@ -282,7 +290,7 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
               <CheckCircle className="h-8 w-8 text-green-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Completados (Mes)</p>
-                <p className="text-2xl font-bold">{serviciosCompletados}</p>
+                <p className="text-2xl font-bold">{servicesCompletados}</p>
               </div>
             </div>
           </CardContent>
@@ -306,21 +314,21 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
               <TrendingUp className="h-8 w-8 text-yellow-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Calificación Promedio</p>
-                <p className="text-2xl font-bold">{calificacionPromedio.toFixed(1)}</p>
+                <p className="text-2xl font-bold">{averageRating.toFixed(1)}</p>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="servicios" className="space-y-6">
+      <Tabs defaultValue="services" className="space-y-6">
         <TabsList>
-          <TabsTrigger value="servicios">Catálogo de Servicios</TabsTrigger>
+          <TabsTrigger value="services">Catálogo de services</TabsTrigger>
           <TabsTrigger value="historial">Historial</TabsTrigger>
           <TabsTrigger value="reportes">Reportes</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="servicios">
+        <TabsContent value="services">
           {/* Filtros y búsqueda */}
           <Card className="mb-6">
             <CardContent className="p-4">
@@ -329,14 +337,14 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Buscar por nombre, código o categoría..."
+                      placeholder="Buscar por name, código o categoría..."
                       value={busqueda}
                       onChange={(e) => setBusqueda(e.target.value)}
                       className="pl-10"
                     />
                   </div>
                 </div>
-                <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
+                <Select value={filtrocategory} onValueChange={setFiltrocategory}>
                   <SelectTrigger className="w-full md:w-48">
                     <SelectValue placeholder="Categoría" />
                   </SelectTrigger>
@@ -349,12 +357,12 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
                     <SelectItem value="suspension">Suspensión</SelectItem>
                   </SelectContent>
                 </Select>
-                <Select value={filtroEstado} onValueChange={setFiltroEstado}>
+                <Select value={filtrostatus} onValueChange={setFiltrostatus}>
                   <SelectTrigger className="w-full md:w-48">
-                    <SelectValue placeholder="Estado" />
+                    <SelectValue placeholder="status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="todos">Todos los estados</SelectItem>
+                    <SelectItem value="todos">Todos los statuss</SelectItem>
                     <SelectItem value="activo">Activo</SelectItem>
                     <SelectItem value="inactivo">Inactivo</SelectItem>
                   </SelectContent>
@@ -363,60 +371,60 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
             </CardContent>
           </Card>
 
-          {/* Tabla de servicios */}
+          {/* Tabla de services */}
           <Card>
             <CardContent className="p-0">
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Servicio</TableHead>
+                    <TableHead>service</TableHead>
                     <TableHead>Código</TableHead>
                     <TableHead>Categoría</TableHead>
                     <TableHead>Duración</TableHead>
-                    <TableHead>Precio</TableHead>
+                    <TableHead>price</TableHead>
                     <TableHead>Realizados</TableHead>
-                    <TableHead>Estado</TableHead>
+                    <TableHead>status</TableHead>
                     <TableHead>Acciones</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {serviciosFiltrados.map((servicio) => (
-                    <TableRow key={servicio.id}>
+                  {servicesFiltrados.map((service) => (
+                    <TableRow key={service.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{servicio.nombre}</p>
-                          <p className="text-sm text-muted-foreground">{servicio.especialidad}</p>
+                          <p className="font-medium">{service.name}</p>
+                          <p className="text-sm text-muted-foreground">{service.specialty}</p>
                         </div>
                       </TableCell>
-                      <TableCell className="font-mono">{servicio.codigo}</TableCell>
-                      <TableCell className="capitalize">{servicio.categoria}</TableCell>
+                      <TableCell className="font-mono">{service.code}</TableCell>
+                      <TableCell className="capitalize">{service.category}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <Clock className="h-4 w-4" />
-                          {servicio.duracionEstimada} min
+                          {service.estimatedDurationMinutes} min
                         </div>
                       </TableCell>
-                      <TableCell className="font-bold">${servicio.precio}</TableCell>
+                      <TableCell className="font-bold">${service.price}</TableCell>
                       <TableCell>
                         <div className="text-center">
-                          <p className="font-bold">{servicio.serviciosRealizados}</p>
+                          <p className="font-bold">{service.completedServicesCount}</p>
                           <p className="text-xs text-muted-foreground">
-                            ★ {servicio.calificacionPromedio}
+                            ★ {service.averageRating}
                           </p>
                         </div>
                       </TableCell>
-                      <TableCell>{getEstadoBadge(servicio.estado)}</TableCell>
+                      <TableCell>{getstatusBadge(service.status)}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
                           <Button 
                             size="sm" 
                             variant="ghost"
                             onClick={() => {
-                              setServicioSeleccionado(servicio);
-                              setEdicionServicio({
-                                precio: servicio.precio.toString(),
-                                disponible: servicio.disponible,
-                                descripcion: servicio.descripcion
+                              setserviceSeleccionado(service);
+                              setEdicionservice({
+                                price: service.price.toString(),
+                                isAvailable: service.isAvailable,
+                                description: service.description
                               });
                               setMostrarDialogoEdicion(true);
                             }}
@@ -442,34 +450,34 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
         <TabsContent value="historial">
           <Card>
             <CardHeader>
-              <CardTitle>Historial de Servicios</CardTitle>
+              <CardTitle>Historial de services</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Fecha</TableHead>
-                    <TableHead>Servicio</TableHead>
-                    <TableHead>Cliente</TableHead>
+                    <TableHead>date</TableHead>
+                    <TableHead>service</TableHead>
+                    <TableHead>customer</TableHead>
                     <TableHead>Vehículo</TableHead>
-                    <TableHead>Estado</TableHead>
-                    <TableHead>Precio</TableHead>
+                    <TableHead>status</TableHead>
+                    <TableHead>price</TableHead>
                     <TableHead>Calificación</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {historialServicios.map((registro) => (
+                  {serviceHistory.map((registro) => (
                     <TableRow key={registro.id}>
-                      <TableCell>{registro.fecha}</TableCell>
-                      <TableCell>{registro.servicio}</TableCell>
-                      <TableCell>{registro.cliente}</TableCell>
-                      <TableCell>{registro.vehiculo}</TableCell>
-                      <TableCell>{getEstadoServicioBadge(registro.estado)}</TableCell>
-                      <TableCell className="font-bold">${registro.precio}</TableCell>
+                      <TableCell>{registro.date}</TableCell>
+                      <TableCell>{registro.service}</TableCell>
+                      <TableCell>{registro.customer}</TableCell>
+                      <TableCell>{registro.vehicle}</TableCell>
+                      <TableCell>{getstatusserviceBadge(registro.status)}</TableCell>
+                      <TableCell className="font-bold">${registro.price}</TableCell>
                       <TableCell>
-                        {registro.calificacion ? (
+                        {registro.rating ? (
                           <span className="flex items-center gap-1">
-                            ★ {registro.calificacion}
+                            ★ {registro.rating}
                           </span>
                         ) : (
                           <span className="text-muted-foreground">Sin calificar</span>
@@ -487,10 +495,10 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>Servicios Más Solicitados</CardTitle>
+                <CardTitle>services Más Solicitados</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Reportes de servicios más solicitados próximamente...</p>
+                <p className="text-muted-foreground">Reportes de services más solicitados próximamente...</p>
               </CardContent>
             </Card>
             
@@ -499,55 +507,55 @@ export function ServicesPage({ onRegresar, onCambiarVista }: ServiciosTallerProp
                 <CardTitle>Análisis de Rentabilidad</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Análisis detallado de rentabilidad por servicio próximamente...</p>
+                <p className="text-muted-foreground">Análisis detallado de rentabilidad por service próximamente...</p>
               </CardContent>
             </Card>
           </div>
         </TabsContent>
       </Tabs>
 
-      {/* Dialog para edición de servicio */}
+      {/* Dialog para edición de service */}
       <Dialog open={mostrarDialogoEdicion} onOpenChange={setMostrarDialogoEdicion}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Editar Servicio</DialogTitle>
+            <DialogTitle>Editar service</DialogTitle>
             <DialogDescription>
-              {servicioSeleccionado?.nombre}
+              {serviceSeleccionado?.name}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label>Precio</Label>
+              <Label>price</Label>
               <Input
                 type="number"
-                value={edicionServicio.precio}
-                onChange={(e) => setEdicionServicio(prev => ({...prev, precio: e.target.value}))}
-                placeholder="Precio del servicio"
+                value={edicionservice.price}
+                onChange={(e) => setEdicionservice(prev => ({...prev, price: e.target.value}))}
+                placeholder="price del service"
               />
             </div>
             <div>
               <Label>Descripción</Label>
               <Textarea
-                value={edicionServicio.descripcion}
-                onChange={(e) => setEdicionServicio(prev => ({...prev, descripcion: e.target.value}))}
-                placeholder="Descripción detallada del servicio"
+                value={edicionservice.description}
+                onChange={(e) => setEdicionservice(prev => ({...prev, description: e.target.value}))}
+                placeholder="Descripción detallada del service"
                 rows={3}
               />
             </div>
             <div className="flex items-center space-x-2">
               <input
                 type="checkbox"
-                id="disponible"
-                checked={edicionServicio.disponible}
-                onChange={(e) => setEdicionServicio(prev => ({...prev, disponible: e.target.checked}))}
+                id="isAvailable"
+                checked={edicionservice.isAvailable}
+                onChange={(e) => setEdicionservice(prev => ({...prev, isAvailable: e.target.checked}))}
               />
-              <Label htmlFor="disponible">Servicio disponible</Label>
+              <Label htmlFor="isAvailable">service isAvailable</Label>
             </div>
             <div className="flex justify-end gap-2">
               <Button variant="outline" onClick={() => setMostrarDialogoEdicion(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleEditarServicio}>
+              <Button onClick={handleEditarservice}>
                 Guardar Cambios
               </Button>
             </div>

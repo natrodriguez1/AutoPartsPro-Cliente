@@ -29,10 +29,10 @@ import { ChatTaller } from '@/features/taller/pages/ChatPage';
 
 // Admin
 import {AdminDashboard} from '@/features/admin/pages/DashboardPage';
-import {UsersPage} from '@/features/admin/pages/UsersPage';
-import {OrdersPage} from '@/features/admin/pages/OrdersPage';
-import {RegisterProductPage} from '@/features/admin/pages/RegisterProductPage';
-import {RegisterServicePage} from '@/features/admin/pages/RegisterServicePage';
+import {UsersPage} from '@/features/taller/pages/UsersPage';
+import {OrdersPage} from '@/features/taller/pages/OrdersPage';
+import {RegisterProductPage} from '@/features/taller/pages/RegisterProductPage';
+import {RegisterServicePage} from '@/features/taller/pages/RegisterServicePage';
 
 export const router = createBrowserRouter([
     {
@@ -43,6 +43,7 @@ export const router = createBrowserRouter([
             { path: 'login', element: <LoginPage /> },
             { path: 'productos/:id', element: <ProductDetailPage /> },
             { path: 'servicios/:id', element: <ServiceDetailPage /> },
+            { path: 'perfilTaller/:tallerId', element: <TallerProfilePage /> },
             { path: 'carrito', element: (
                 <ProtectedRoute><CartPage /></ProtectedRoute>
             ) },
@@ -70,8 +71,12 @@ export const router = createBrowserRouter([
             { path: 'inventario', element: <InventoryPage /> },
             { path: 'servicios', element: <ServicesPage /> },
             { path: 'intercambio', element: <ExchangePage /> },
-            { path: 'perfil', element: <TallerProfilePage /> },
-            { path: 'chat', element: <ChatTaller /> },
+            { path: 'perfil/:tallerId', element: <TallerProfilePage /> },
+            { path: 'chat/:tallerId', element: <ChatTaller /> },
+            { path: 'registro-productos', element: <RegisterProductPage /> },
+            { path: 'registro-servicios', element: <RegisterServicePage /> },
+            { path: 'ordenes', element: <OrdersPage /> },
+            { path: 'usuarios', element: <UsersPage /> },
         ],
     },
     {
@@ -83,10 +88,6 @@ export const router = createBrowserRouter([
         ),
         children: [
             { index: true, element: <AdminDashboard /> },
-            { path: 'usuarios', element: <UsersPage /> },
-            { path: 'ordenes', element: <OrdersPage /> },
-            { path: 'registro-productos', element: <RegisterProductPage /> },
-            { path: 'registro-servicios', element: <RegisterServicePage /> },
         ],
     },
 ]);

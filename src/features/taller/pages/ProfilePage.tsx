@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCart } from "@/features/cart/store/cart.store";
+import { Product } from "@/features/catalog/types/product";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
@@ -35,18 +38,58 @@ import {
 import { toast } from "sonner";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 
-interface PerfilTallerProps {
-  taller: any;
-  onRegresar: () => void;
-  onIniciarChat: () => void;
-  onAgregarCarrito?: (producto: any) => void;
-  onToggleWishlist?: (producto: any) => void;
-  onVerProducto?: (producto: any) => void;
-  wishlistItems?: any[];
-}
+type WorkshopProduct = {
+  id: string;
+  nombre: string;
+  precio: number;
+  precioOriginal?: number;
+  rating: number;
+  reviewCount: number;
+  image: string;
+  categoria: string;
+  marca: string;
+  stock: number;
+  disponible: boolean;
+  isSale?: boolean;
+  salePercentage?: number;
+  isNew?: boolean;
+  descripcion: string;
+  compatibility: string[];
+};
+
+type WorkshopReview = {
+  id: string;
+  usuario: string;
+  avatar: string;
+  fecha: string;
+  calificacion: number;
+  servicio: string;
+  titulo: string;
+  comentario: string;
+  util: number;
+  respuestaTaller: string | null;
+};
+
+type WorkshopDetail = {
+  nombre: string;
+  especialidad: string;
+  direccion: string;
+  ciudad: string;
+  telefono: string;
+  email: string;
+  horarios: string;
+  rating: number;
+  reviews: number;
+  coordenadas: { lat: number; lng: number };
+  servicios: string[];
+  certificaciones: string[];
+  añosExperiencia: number;
+  tecnicosDisponibles: number;
+  whatsapp?: string;
+};
 
 // TODO: llamada a productos por taller
-const productosPorTaller = {
+const productosPorTaller: Record<string, WorkshopProduct[]> = {
   "1": [ // AutoMaster Quito
     {
       id: "brake_001",
@@ -212,7 +255,7 @@ const productosPorTaller = {
 };
 
 // TODO: llamada a reseñas del taller
-const resenasEjemplo = [
+const resenasEjemplo: WorkshopReview[] = [
   {
     id: "1",
     usuario: "Carlos Mendoza",
@@ -275,20 +318,7 @@ const resenasEjemplo = [
   }
 ];
 
-export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregarCarrito, onToggleWishlist, onVerProducto, wishlistItems = [] }: PerfilTallerProps) {
-  const [filtroCalificacion, setFiltroCalificacion] = useState<string>("todas");
-  const [filtroProductos, setFiltroProductos] = useState<string>("todos");
-  const [busquedaProductos, setBusquedaProductos] = useState<string>("");
-  const [mostrarFormularioResena, setMostrarFormularioResena] = useState(false);
-  const [nuevaResena, setNuevaResena] = useState({
-    calificacion: 0,
-    titulo: "",
-    comentario: "",
-    servicio: ""
-  });
-
-  // Datos expandidos de talleres ecuatorianos
-  const talleresEcuador = {
+const talleresEcuador: Record<string, WorkshopDetail> = {
     "1": {
       nombre: "AutoMaster Quito",
       especialidad: "Motor y Transmisión",
@@ -339,8 +369,108 @@ export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregar
     }
   };
 
-  const datosCompletos = talleresEcuador[taller?.id as keyof typeof talleresEcuador] || taller;
-  const productosDelTaller = productosPorTaller[taller?.id as keyof typeof productosPorTaller] || [];
+export function TallerProfilePage() {
+  const navigate = useNavigate();
+
+  const { tallerId } = useParams<{ tallerId: string }>();
+
+  const currentTallerId = tallerId ?? "1";
+
+  const wishlistItems = useCart((s) => s.wishlistItems);
+  const toggleWishlist = useCart((s) => s.toggleWishlist);
+  const cartItems = useCart((s) => s.items);
+  const addToCart = useCart((s) => s.add);
+
+  const [filtroCalificacion, setFiltroCalificacion] = useState<string>("todas");
+  const [filtroProductos, setFiltroProductos] = useState<string>("todos");
+  const [busquedaProductos, setBusquedaProductos] = useState<string>("");
+  const [mostrarFormularioResena, setMostrarFormularioResena] = useState(false);
+  const [nuevaResena, setNuevaResena] = useState({
+    calificacion: 0,
+    titulo: "",
+    comentario: "",
+    servicio: ""
+  });
+
+  const datosCompletos = talleresEcuador[currentTallerId];
+  const productosDelTaller = productosPorTaller[currentTallerId] || [];
+
+    const mapToCatalogProduct = (
+    producto: WorkshopProduct
+  ): Product => ({
+    id: producto.id,
+    name: producto.nombre,
+    price: producto.precio,
+    originalPrice: producto.precioOriginal,
+    image: producto.image,
+    category: producto.categoria,
+    isSale: producto.isSale,
+    salePercentage: producto.salePercentage,
+    rating: producto.rating,
+    reviewCount: producto.reviewCount,
+    brand: producto.marca,
+    compatibility: producto.compatibility,
+    isNew: producto.isNew,
+    description: producto.descripcion,
+    workshopId: currentTallerId,
+    workshopName: datosCompletos?.nombre,
+  });
+
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
+
+  const handleIniciarChat = () => {
+    if (datosCompletos?.whatsapp) {
+      const mensaje = encodeURIComponent(
+        `Hola ${datosCompletos.nombre}, estoy interesado en sus servicios de ${datosCompletos.especialidad}. ¿Podrían ayudarme?`
+      );
+      window.open(
+        `https://wa.me/${datosCompletos.whatsapp.replace(/[^0-9]/g, '')}?text=${mensaje}`,
+        "_blank"
+      );
+      toast.success(`Abriendo WhatsApp para contactar ${datosCompletos.nombre}`);
+    } else {
+      toast.error("No se pudo iniciar el chat por WhatsApp");
+    }
+  };
+
+  const handleAgregarCarrito = (producto: WorkshopProduct) => {
+    if (!datosCompletos) return;
+
+    const productForCart = mapToCatalogProduct(producto);
+    const isInCart = cartItems.some((item) => item.id === productForCart.id);
+
+    addToCart(productForCart, 1);
+
+    toast.success(
+      isInCart
+        ? `Se aumentó la cantidad de ${producto.nombre}`
+        : `${producto.nombre} agregado al carrito`
+    );
+  };
+
+  const handleToggleWishlist = (producto: WorkshopProduct) => {
+    if (!datosCompletos) return;
+
+    const productForWishlist = mapToCatalogProduct(producto);
+    const isInWishlist = wishlistItems.some(
+      (item) => item.id === productForWishlist.id
+    );
+
+    toggleWishlist(productForWishlist);
+
+    toast.success(
+      isInWishlist
+        ? `${producto.nombre} eliminado de favoritos`
+        : `${producto.nombre} agregado a favoritos`
+    );
+  };
+
+  const handleVerProducto = (producto: WorkshopProduct) => {
+    navigate(`/productos/${producto.id}`);
+  };
+
 
   // Cálculo de estadísticas de reseñas
   const estadisticasResenas = {
@@ -399,23 +529,6 @@ export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregar
     });
   };
 
-  const handleAgregarCarrito = (producto: any) => {
-    if (onAgregarCarrito) {
-      onAgregarCarrito(producto);
-      toast.success(`${producto.nombre} agregado al carrito!`);
-    }
-  };
-
-  const handleToggleWishlist = (producto: any) => {
-    if (onToggleWishlist) {
-      onToggleWishlist(producto);
-      const isInWishlist = wishlistItems.some(item => item.id === producto.id);
-      toast.success(isInWishlist ? 
-        `${producto.nombre} eliminado de favoritos` : 
-        `${producto.nombre} agregado a favoritos`
-      );
-    }
-  };
 
   const resenasFiltradasYOrdenadas = resenasEjemplo
     .filter(resena => {
@@ -435,7 +548,7 @@ export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregar
   return (
     <div className="container mx-auto px-4 py-6">
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="outline" onClick={onRegresar}>
+        <Button variant="outline" onClick={handleRegresar}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
         </Button>
@@ -649,7 +762,7 @@ export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregar
                             <Button 
                               size="sm" 
                               variant="outline"
-                              onClick={() => onVerProducto?.(producto)}
+                              onClick={() => handleVerProducto?.(producto)}
                             >
                               <Eye className="h-3 w-3" />
                             </Button>
@@ -819,7 +932,7 @@ export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregar
               <CardTitle>Contactar</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button onClick={onIniciarChat} className="w-full">
+              <Button onClick={handleIniciarChat} className="w-full">
                 <MessageCircle className="h-4 w-4 mr-2" />
                 Iniciar Chat
               </Button>
@@ -946,7 +1059,7 @@ export function TallerProfilePage({ taller, onRegresar, onIniciarChat, onAgregar
 
             <div>
               <Label>Servicio recibido</Label>
-              <Select value={nuevaResena.servicio} onValueChange={(value) => setNuevaResena(prev => ({...prev, servicio: value}))}>
+              <Select value={nuevaResena.servicio} onValueChange={(value: string) => setNuevaResena(prev => ({...prev, servicio: value}))}>
                 <SelectTrigger>
                   <SelectValue placeholder="¿Qué servicio recibiste?" />
                 </SelectTrigger>

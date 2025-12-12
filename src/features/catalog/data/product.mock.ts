@@ -15,8 +15,8 @@ export const productsMock: Product[] = [
     isSale: true,
     salePercentage: 25,
     description: "Pastillas de freno cerámicas de alto rendimiento, menos ruido y mayor durabilidad",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
+    workshopId: "1",
+    workshopName: "AutoMaster Quito"
   },
   {
     id: "engine_001",
@@ -32,8 +32,8 @@ export const productsMock: Product[] = [
     isSale: true,
     salePercentage: 30,
     description: "Filtro de aire de alto flujo, lavable y reutilizable",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
+    workshopId: "1",
+    workshopName: "AutoMaster Quito"
   },
   {
     id: "tire_001",
@@ -49,8 +49,8 @@ export const productsMock: Product[] = [
     isSale: true,
     salePercentage: 11,
     description: "Neumáticos para ciudad con excelente durabilidad y confort",
-    tallerId: "2",
-    tallerNombre: "TallerPro Guayaquil"
+    workshopId: "2",
+    workshopName: "TallerPro Guayaquil"
   },
   {
     id: "elec_001",
@@ -63,8 +63,8 @@ export const productsMock: Product[] = [
     brand: "bosch",
     compatibility: ["universal"],
     description: "Batería libre de mantenimiento con 3 años de garantía",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
+    workshopId: "1",
+    workshopName: "AutoMaster Quito"
   },
   {
     id: "susp_001",
@@ -77,8 +77,8 @@ export const productsMock: Product[] = [
     brand: "monroe",
     compatibility: ["toyota", "honda", "nissan"],
     description: "Amortiguadores de gas para mejor control y confort de manejo",
-    tallerId: "3",
-    tallerNombre: "MecánicaTotal Cuenca"
+    workshopId: "3",
+    workshopName: "MecánicaTotal Cuenca"
   },
   {
     id: "engine_002",
@@ -91,8 +91,8 @@ export const productsMock: Product[] = [
     brand: "mobil1",
     compatibility: ["universal"],
     description: "Aceite sintético premium 5W-30 para máxima protección del motor",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
+    workshopId: "1",
+    workshopName: "AutoMaster Quito"
   },
   {
     id: "elec_002",
@@ -106,8 +106,8 @@ export const productsMock: Product[] = [
     compatibility: ["universal"],
     isNew: true,
     description: "Luces LED de alta eficiencia para mejor visibilidad nocturna",
-    tallerId: "2",
-    tallerNombre: "TallerPro Guayaquil"
+    workshopId: "2",
+    workshopName: "TallerPro Guayaquil"
   },
   {
     id: "trans_001",
@@ -123,7 +123,7 @@ export const productsMock: Product[] = [
     isSale: true,
     salePercentage: 20,
     description: "Kit completo de embrague para transmisión manual",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito"
+    workshopId: "1",
+    workshopName: "AutoMaster Quito"
   }
 ] as const;

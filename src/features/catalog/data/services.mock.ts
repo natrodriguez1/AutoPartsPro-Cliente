@@ -12,12 +12,12 @@ export const servicesMock: Service[] = [
     category: "mantenimiento",
     duration: "30 min",
     description: "Cambio de aceite sintético premium con filtro de aceite y revisión general de 21 puntos",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito",
-    ciudad: "Quito",
-    telefono: "+593-2-245-6789",
+    workshopId: "1",
+    workshopName: "AutoMaster Quito",
+    city: "Quito",
+    phoneNumber: "+593-2-245-6789",
     whatsapp: "+593-99-123-4567",
-    especialidad: "Mantenimiento Preventivo",
+    specialty: "Mantenimiento Preventivo",
     isPromoted: true
   },
   {
@@ -30,12 +30,12 @@ export const servicesMock: Service[] = [
     category: "diagnostico",
     duration: "45 min",
     description: "Diagnóstico completo con scanner profesional, revisión de códigos de error y reporte detallado",
-    tallerId: "1",
-    tallerNombre: "AutoMaster Quito",
-    ciudad: "Quito",
-    telefono: "+593-2-245-6789",
+    workshopId: "1",
+    workshopName: "AutoMaster Quito",
+    city: "Quito",
+    phoneNumber: "+593-2-245-6789",
     whatsapp: "+593-99-123-4567",
-    especialidad: "Diagnóstico Electrónico"
+    specialty: "Diagnóstico Electrónico"
   },
   {
     id: "service_003",
@@ -47,12 +47,12 @@ export const servicesMock: Service[] = [
     category: "frenos",
     duration: "60 min",
     description: "Revisión completa de pastillas, discos, líquido de frenos y calibración del sistema",
-    tallerId: "2",
-    tallerNombre: "TallerPro Guayaquil",
-    ciudad: "Guayaquil",
-    telefono: "+593-4-289-3456",
+    workshopId: "2",
+    workshopName: "TallerPro Guayaquil",
+    city: "Guayaquil",
+    phoneNumber: "+593-4-289-3456",
     whatsapp: "+593-98-765-4321",
-    especialidad: "Sistema de Frenos"
+    specialty: "Sistema de Frenos"
   },
   {
     id: "service_004",
@@ -64,12 +64,12 @@ export const servicesMock: Service[] = [
     category: "suspension",
     duration: "45 min",
     description: "Alineación de precisión con tecnología 3D, balanceado de llantas incluido",
-    tallerId: "3",
-    tallerNombre: "MecánicaTotal Cuenca",
-    ciudad: "Cuenca",
-    telefono: "+593-7-405-7890",
+    workshopId: "3",
+    workshopName: "MecánicaTotal Cuenca",
+    city: "Cuenca",
+    phoneNumber: "+593-7-405-7890",
     whatsapp: "+593-96-789-0123",
-    especialidad: "Suspensión y Dirección",
+    specialty: "Suspensión y Dirección",
     isUrgent: true
   },
   {
@@ -83,12 +83,12 @@ export const servicesMock: Service[] = [
     category: "transmision",
     duration: "90 min",
     description: "Cambio de aceite de transmisión, revisión de embrague y ajustes necesarios",
-    tallerId: "4",
-    tallerNombre: "ExpressAuto Ambato",
-    ciudad: "Ambato",
-    telefono: "+593-3-242-1890",
+    workshopId: "4",
+    workshopName: "ExpressAuto Ambato",
+    city: "Ambato",
+    phoneNumber: "+593-3-242-1890",
     whatsapp: "+593-97-456-7890",
-    especialidad: "Transmisión Manual y Automática"
+    specialty: "Transmisión Manual y Automática"
   },
   {
     id: "service_006",
@@ -100,12 +100,12 @@ export const servicesMock: Service[] = [
     category: "revision",
     duration: "75 min",
     description: "Revisión integral preparatoria para la Inspección Técnica Vehicular",
-    tallerId: "5",
-    tallerNombre: "AutoTech Manta",
-    ciudad: "Manta",
-    telefono: "+593-5-262-3456",
+    workshopId: "5",
+    workshopName: "AutoTech Manta",
+    city: "Manta",
+    phoneNumber: "+593-5-262-3456",
     whatsapp: "+593-95-234-5678",
-    especialidad: "Inspección Vehicular",
+    specialty: "Inspección Vehicular",
     isPromoted: true
   },
   {
@@ -118,11 +118,11 @@ export const servicesMock: Service[] = [
     category: "climatizacion",
     duration: "60 min",
     description: "Revisión, recarga y mantenimiento completo del sistema de aire acondicionado",
-    tallerId: "6",
-    tallerNombre: "ClimaCar Loja",
-    ciudad: "Loja",
-    telefono: "+593-7-257-4567",
+    workshopId: "6",
+    workshopName: "ClimaCar Loja",
+    city: "Loja",
+    phoneNumber: "+593-7-257-4567",
     whatsapp: "+593-94-567-8901",
-    especialidad: "Aire Acondicionado"
+    specialty: "Aire Acondicionado"
   }
 ] as const;

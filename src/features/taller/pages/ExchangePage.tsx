@@ -1,24 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Button } from "@/shared/ui/button";
 import { Textarea } from "@/shared/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { Badge } from "@/shared/ui/badge";
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
 import { Progress } from "@/shared/ui/progress";
 import { 
   MessageCircle, 
   Send, 
-  Search, 
-  Filter,
-  MapPin,
-  Star,
+  Search,
   Package,
   ArrowLeft,
-  Phone,
-  Mail,
   ArrowRight,
   ArrowLeftRight,
   CheckCircle,
@@ -28,92 +22,103 @@ import {
   Truck
 } from "lucide-react";
 import { toast } from "sonner";
+
+import type {
+  WorkshopExchange,
+  WorkshopExchangePartner,
+  ExchangeStatus,
+  ExchangeDirection,
+} from "../types/exchange";
+
 //TODO: llamada a talleres cercanos
-const talleresCercanos = [
+const nearbyWorkshops: WorkshopExchangePartner[] = [
   {
     id: "1",
-    nombre: "AutoMaster Quito",
-    distancia: "2.3 km",
+    name: "AutoMaster Quito",
+    distance: "2.3 km",
     rating: 4.8,
-    especialidad: "Motor y Transmisión",
-    telefono: "+593 2 245-6789",
+    specialty: "Motor y Transmisión",
+    phoneNumber: "+593 2 245-6789",
     email: "automaster@email.com",
-    inventario: ["Pastillas de freno", "Filtros de aceite", "Bujías", "Correas"]
+    inventorySummary: ["Pastillas de freno", "Filtros de aceite", "Bujías", "Correas"]
   },
   {
     id: "2",
-    nombre: "TallerPro Guayaquil",
-    distancia: "3.1 km",
+    name: "TallerPro Guayaquil",
+    distance: "3.1 km",
     rating: 4.6,
-    especialidad: "Sistema de Frenos",
-    telefono: "+593 4 289-3456",
+    specialty: "Sistema de Frenos",
+    phoneNumber: "+593 4 289-3456",
     email: "tallerpro@email.com",
-    inventario: ["Discos de freno", "Líquido de frenos", "Mangueras", "Cilindros"]
+    inventorySummary: ["Discos de freno", "Líquido de frenos", "Mangueras", "Cilindros"]
   },
   {
     id: "3",
-    nombre: "MecánicaTotal Cuenca",
-    distancia: "4.5 km",
+    name: "MecánicaTotal Cuenca",
+    distance: "4.5 km",
     rating: 4.7,
-    especialidad: "Suspensión y Dirección",
-    telefono: "+593 7 405-7890",
+    specialty: "Suspensión y Dirección",
+    phoneNumber: "+593 7 405-7890",
     email: "mecanicatotal@email.com",
-    inventario: ["Amortiguadores", "Resortes", "Rótulas", "Terminales"]
+    inventorySummary: ["Amortiguadores", "Resortes", "Rótulas", "Terminales"]
   }
 ];
 //TODO: llamada a solicitudes de intercambio
-const intercambiosEjemplo = [
+const exampleExchanges: WorkshopExchange[] = [
   {
     id: "1",
-    taller: "AutoMaster Quito",
-    piezaSolicitada: "Pastillas de freno Honda Civic",
-    piezaOfrecida: "Filtro de aceite Mobil 1",
-    estado: "pendiente",
-    fecha: "Hace 2 horas",
-    direccion: "recibe",
-    progreso: 25,
-    proximoPaso: "Esperando respuesta del taller"
+    workshopName: "AutoMaster Quito",
+    requestedPart: "Pastillas de freno Honda Civic",
+    offeredPart: "Filtro de aceite Mobil 1",
+    status: "pendiente",
+    createdAt: "Hace 2 horas",
+    direction: "recibe",
+    progress: 25,
+    nextStep: "Esperando respuesta del taller"
   },
   {
     id: "2",
-    taller: "TallerPro Guayaquil",
-    piezaSolicitada: "Amortiguador delantero",
-    piezaOfrecida: "Kit de pastillas cerámicas",
-    estado: "en_proceso",
-    fecha: "Hace 1 día",
-    direccion: "envia",
-    progreso: 60,
-    proximoPaso: "Preparando paquete para envío"
+    workshopName: "TallerPro Guayaquil",
+    requestedPart: "Amortiguador delantero",
+    offeredPart: "Kit de pastillas cerámicas",
+    status: "en_proceso",
+    createdAt: "Hace 1 día",
+    direction: "envia",
+    progress: 60,
+    nextStep: "Preparando paquete para envío"
   },
   {
     id: "3",
-    taller: "MecánicaTotal Cuenca",
-    piezaSolicitada: "Bomba de gasolina",
-    piezaOfrecida: "Radiador universal",
-    estado: "completado",
-    fecha: "Hace 3 días",
-    direccion: "recibe",
-    progreso: 100,
-    proximoPaso: "Intercambio completado"
+    workshopName: "MecánicaTotal Cuenca",
+    requestedPart: "Bomba de gasolina",
+    offeredPart: "Radiador universal",
+    status: "completado",
+    createdAt: "Hace 3 días",
+    direction: "recibe",
+    progress: 100,
+    nextStep: "Intercambio completado"
   },
   {
     id: "4",
-    taller: "AutoExpress",
-    piezaSolicitada: "Batería 12V",
-    piezaOfrecida: "Alternador remanufacturado",
-    estado: "rechazado",
-    fecha: "Hace 5 días",
-    direccion: "envia",
-    progreso: 0,
-    proximoPaso: "Solicitud rechazada"
+    workshopName: "AutoExpress",
+    requestedPart: "Batería 12V",
+    offeredPart: "Alternador remanufacturado",
+    status: "rechazado",
+    createdAt: "Hace 5 días",
+    direction: "envia",
+    progress: 0,
+    nextStep: "Solicitud rechazada"
   }
 ];
 
-interface IntercambioTalleresProps {
-  onRegresar: () => void;
-}
 
-export function ExchangePage({ onRegresar }: IntercambioTalleresProps) {
+export function ExchangePage() {
+  const navigate = useNavigate();
+
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
+
   const [vistaActual, setVistaActual] = useState<"lista" | "crear" | "detalles">("lista");
   const [intercambioSeleccionado, setIntercambioSeleccionado] = useState<any>(null);
   const [filtroEstado, setFiltroEstado] = useState("todos");
@@ -178,10 +183,10 @@ export function ExchangePage({ onRegresar }: IntercambioTalleresProps) {
     setDescripcion("");
   };
 
-  const intercambiosFiltrados = intercambiosEjemplo.filter(intercambio => {
-    const coincideBusqueda = intercambio.taller.toLowerCase().includes(busqueda.toLowerCase()) ||
-      intercambio.piezaSolicitada.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideEstado = filtroEstado === "todos" || intercambio.estado === filtroEstado;
+  const intercambiosFiltrados = exampleExchanges.filter(intercambio => {
+    const coincideBusqueda = intercambio.workshopName.toLowerCase().includes(busqueda.toLowerCase()) ||
+      intercambio.requestedPart.toLowerCase().includes(busqueda.toLowerCase());
+    const coincideEstado = filtroEstado === "todos" || intercambio.status === filtroEstado;
     return coincideBusqueda && coincideEstado;
   });
 
@@ -214,9 +219,9 @@ export function ExchangePage({ onRegresar }: IntercambioTalleresProps) {
                   <SelectValue placeholder="Selecciona un taller" />
                 </SelectTrigger>
                 <SelectContent>
-                  {talleresCercanos.map((taller) => (
+                  {nearbyWorkshops.map((taller) => (
                     <SelectItem key={taller.id} value={taller.id}>
-                      {taller.nombre} - {taller.especialidad}
+                      {taller.name} - {taller.specialty}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -290,7 +295,7 @@ export function ExchangePage({ onRegresar }: IntercambioTalleresProps) {
     <div className="container mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="outline" onClick={onRegresar}>
+          <Button variant="outline" onClick={handleRegresar}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver
           </Button>
@@ -347,42 +352,42 @@ export function ExchangePage({ onRegresar }: IntercambioTalleresProps) {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="flex items-center gap-2">
-                      {getIconoEstado(intercambio.estado)}
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getColorEstado(intercambio.estado)}`}>
-                        {intercambio.estado.replace('_', ' ').toUpperCase()}
+                      {getIconoEstado(intercambio.status)}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getColorEstado(intercambio.status)}`}>
+                        {intercambio.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {getIconoDireccion(intercambio.direccion)}
-                      <span>{intercambio.direccion === "envia" ? "Enviando" : "Recibiendo"}</span>
+                      {getIconoDireccion(intercambio.direction)}
+                      <span>{intercambio.direction === "envia" ? "Enviando" : "Recibiendo"}</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
-                      <p className="text-sm font-medium">Con: {intercambio.taller}</p>
-                      <p className="text-sm text-muted-foreground">{intercambio.fecha}</p>
+                      <p className="text-sm font-medium">Con: {intercambio.workshopName}</p>
+                      <p className="text-sm text-muted-foreground">{intercambio.createdAt}</p>
                     </div>
                     <div className="space-y-2">
                       <div className="flex items-center gap-2 text-sm">
                         <Package className="h-4 w-4 text-blue-500" />
-                        <span>Ofreces: {intercambio.piezaOfrecida}</span>
+                        <span>Ofreces: {intercambio.offeredPart}</span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <Package className="h-4 w-4 text-green-500" />
-                        <span>Solicitas: {intercambio.piezaSolicitada}</span>
+                        <span>Solicitas: {intercambio.requestedPart}</span>
                       </div>
                     </div>
                   </div>
 
-                  {intercambio.estado !== "rechazado" && (
+                  {intercambio.status !== "rechazado" && (
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Progreso:</span>
-                        <span>{intercambio.progreso}%</span>
+                        <span>{intercambio.progress}%</span>
                       </div>
-                      <Progress value={intercambio.progreso} className="h-2" />
-                      <p className="text-xs text-muted-foreground">{intercambio.proximoPaso}</p>
+                      <Progress value={intercambio.progress} className="h-2" />
+                      <p className="text-xs text-muted-foreground">{intercambio.nextStep}</p>
                     </div>
                   )}
                 </div>
