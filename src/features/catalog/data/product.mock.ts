@@ -126,4 +126,17 @@ export const productsMock: Product[] = [
     workshopId: "1",
     workshopName: "AutoMaster Quito"
   }
-] as const;
+];
+
+export const productCategories = [
+  { id: "frenos", label: "Frenos y Sistema de Frenado", count: 12 },
+  { id: "motor", label: "Motor y Componentes", count: 18 },
+  { id: "neumaticos", label: "Neumáticos y Llantas", count: 8 },
+  { id: "suspension", label: "Suspensión y Dirección", count: 14 },
+  { id: "electrico", label: "Sistema Eléctrico", count: 10 },
+  { id: "transmision", label: "Transmisión y Embrague", count: 6 },
+  { id: "accesorios", label: "Accesorios y Confort", count: 15 },
+  { id: "herramientas", label: "Herramientas y Equipos", count: 9 }
+];
+
+

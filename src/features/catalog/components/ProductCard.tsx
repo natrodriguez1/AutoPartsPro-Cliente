@@ -1,11 +1,12 @@
-import { useState } from "react";
 import { Product } from "../types/product";
-import { Heart, ShoppingCart, Star, MessageCircle, Award, CheckCircle, Eye, Globe } from "lucide-react";
+import { Heart, ShoppingCart, Star, Award, CheckCircle, Eye, Globe } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent } from "@/shared/ui/card";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
-import { toast } from "sonner";
+import type { Carro } from "@/app/types/auth";
+import { RatingStars } from "@/shared/components/RatingStars";
+import { useProductCompatibility } from "../hooks/useProductCompatibility";
 
 interface ProductCardProps {
   product: Product;
@@ -14,13 +15,7 @@ interface ProductCardProps {
   onVerProducto: (productId: string) => void;
   isInWishlist?: boolean;
   viewMode?: "grid" | "list";
-  userCars?: Array<{
-    id: string;
-    marca: string;
-    modelo: string;
-    año: number;
-    motor?: string;
-  }>;
+  userCars?: Carro[];
 }
 
 export function ProductCard({ 
@@ -45,73 +40,8 @@ export function ProductCard({
     onVerProducto(product.id);
   };
 
-  // Verificar compatibilidad mejorada
-  const checkCompatibility = () => {
-    if (!product.compatibility) return { 
-      isUniversal: false, 
-      isSpecificCompatible: false, 
-      matchedCars: [] 
-    };
-    
-    // Verificar si es universal
-    const isUniversal = product.compatibility.some(compat => 
-      compat.toLowerCase() === "universal"
-    );
-    
-    if (!userCars.length) {
-      return { 
-        isUniversal, 
-        isSpecificCompatible: false, 
-        matchedCars: [] 
-      };
-    }
-    
-    const matchedCars = [];
-    
-    for (const car of userCars) {
-      const carBrand = car.marca.toLowerCase();
-      const carModel = car.modelo.toLowerCase();
-      
-      const isSpecificCompatible = product.compatibility.some(compat => {
-        const compatLower = compat.toLowerCase();
-        return compatLower !== "universal" && (
-          compatLower === carBrand || 
-          compatLower.includes(carBrand) ||
-          compatLower === carModel ||
-          compatLower.includes(carModel)
-        );
-      });
-      
-      if (isSpecificCompatible) {
-        matchedCars.push(car);
-      }
-    }
-    
-    return { 
-      isUniversal, 
-      isSpecificCompatible: matchedCars.length > 0, 
-      matchedCars 
-    };
-  };
 
-  const compatibility = checkCompatibility();
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Star
-          key={i}
-          className={`h-3 w-3 ${
-            i <= rating 
-              ? "fill-yellow-400 text-yellow-400" 
-              : "text-muted-foreground"
-          }`}
-        />
-      );
-    }
-    return stars;
-  };
+  const compatibility = useProductCompatibility(product, userCars);
 
   if (viewMode === "list") {
     return (
@@ -165,7 +95,7 @@ export function ProductCard({
                   
                   <div className="flex items-center gap-2 mb-2">
                     <div className="flex items-center gap-1">
-                      {renderStars(product.rating)}
+                      <RatingStars rating={product.rating} size="sm" />
                       <span className="text-sm text-muted-foreground">
                         {product.rating} ({product.reviewCount})
                       </span>
@@ -307,7 +237,7 @@ export function ProductCard({
           )}
 
           <div className="flex items-center gap-1">
-            {renderStars(product.rating)}
+            <RatingStars rating={product.rating} size="sm" />
             <span className="text-sm text-muted-foreground ml-1">
               {product.rating} ({product.reviewCount})
             </span>
@@ -324,10 +254,10 @@ export function ProductCard({
             </div>
           </div>
 
-          {product.tallerNombre && (
+          {product.workshopName && (
             <div className="text-xs text-muted-foreground flex items-center gap-1">
               <Award className="h-3 w-3" />
-              <span>Por {product.tallerNombre}</span>
+              <span>Por {product.workshopName}</span>
             </div>
           )}
 

@@ -1,4 +1,5 @@
 import type { ServiceCore } from "@/domain/service";
+import type { BaseFilters } from "./filters";
 
 export type Service = ServiceCore & {
   originalPrice?: number;
@@ -14,10 +15,4 @@ export type Service = ServiceCore & {
   isUrgent?: boolean;
 };
 
-export type serviceFilter = {
-    categories: string[];
-    priceRange: [number, number];
-    minRating: number;
-    brand: string[];
-    compatibility: string[];
-}
+export type ServiceFilter = BaseFilters;

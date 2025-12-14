@@ -126,3 +126,15 @@ export const servicesMock: Service[] = [
     specialty: "Aire Acondicionado"
   }
 ] as const;
+
+export const serviceCategories = [
+  { id: "mantenimiento", label: "Mantenimiento Preventivo", count: 12 },
+  { id: "diagnostico", label: "Diagnóstico y Revisión", count: 8 },
+  { id: "frenos", label: "Servicios de Frenos", count: 6 },
+  { id: "suspension", label: "Suspensión y Alineación", count: 7 },
+  { id: "transmision", label: "Transmisión y Embrague", count: 4 },
+  { id: "electrico", label: "Sistema Eléctrico", count: 5 },
+  { id: "revision", label: "Inspección Técnica", count: 3 },
+  { id: "climatizacion", label: "Aire Acondicionado", count: 4 },
+  { id: "emergencia", label: "Servicios de Emergencia", count: 2 }
+];

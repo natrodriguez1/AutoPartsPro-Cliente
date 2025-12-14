@@ -1,4 +1,6 @@
 import type { ProductCore } from "@/domain/product";
+import type { BaseFilters } from "./filters";
+import { Carro } from "@/app/types/auth";
 
 export type Product = ProductCore & {
   originalPrice?: number;
@@ -15,10 +17,10 @@ export type Product = ProductCore & {
 
 export type SearchProduct = ProductCore;
 
-export type ProductFilter = {
-    categories: string[];
-    priceRange: [number, number];
-    minRating: number;
-    brand: string[];
-    compatibility: string[];
-}
+export type ProductFilter = BaseFilters;
+
+export type ProductCompatibility = {
+  isUniversal: boolean;
+  isSpecificCompatible: boolean;
+  matchedCars: Carro[];
+};
