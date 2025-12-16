@@ -1,7 +1,7 @@
 export type ProductCore = {
   id: string;
   name: string;
-  brand: string;
+  brand?: string;
   price: number;
   originalPrice?: number;
   image: string;

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from "zustand/middleware";
 import type { CartState } from '../types/cart';
+import { getDiscountPercentage } from "../data/discountCodes";
 
 export const useCart = create<CartState>()(
   persist(
@@ -8,6 +9,8 @@ export const useCart = create<CartState>()(
       items: [],
       wishlistItems: [],
       itemsEliminados: [],
+      discountCode: "",
+      discountPercentage: 0,
 
       add: (p, qty = 1) =>
         set((s) => {
@@ -25,6 +28,17 @@ export const useCart = create<CartState>()(
           if (qty <= 0) return s;
           return { items: s.items.map((it) => (it.id === id ? { ...it, cantidad: qty } : it)) };
         }),
+
+      applyDiscount: (code) => {
+        const clean = code.trim();
+        const pct = getDiscountPercentage(clean);
+        if (!pct) return { ok: false };
+
+        set({ discountCode: clean, discountPercentage: pct });
+        return { ok: true, percentage: pct };
+      },
+
+      clearDiscount: () => set({ discountCode: "", discountPercentage: 0 }),
 
       remove: (id) =>
         set((s) => {
@@ -50,6 +64,8 @@ export const useCart = create<CartState>()(
           };
         }),
 
+
+
       toggleWishlist: (p) =>
         set((s) => {
           const exists = s.wishlistItems.some((x) => x.id === p.id);
@@ -58,8 +74,16 @@ export const useCart = create<CartState>()(
           };
         }),
 
-      clear: () => set({ items: [], wishlistItems: [], itemsEliminados: [] }),
+      clear: () => set({ items: [], wishlistItems: [], itemsEliminados: [], discountCode: "", discountPercentage: 0, }),
     }),
-    { name: "autoparts_cart_v1" }
+    { 
+      name: "autoparts_cart_v1",
+      partialize: (s) => ({ 
+        items: s.items, 
+        wishlistItems: s.wishlistItems,
+        discountCode: s.discountCode,
+        discountPercentage: s.discountPercentage, 
+      }),
+    }
   )
 );

@@ -3,12 +3,9 @@ import type { BaseFilters } from "./filters";
 import { Carro } from "@/app/types/auth";
 
 export type Product = ProductCore & {
-  originalPrice?: number;
   rating: number;
   reviewCount: number;
   compatibility: string[];
-  isSale?: boolean;
-  salePercentage?: number;
   isNew?: boolean;
   description?: string;
   workshopId?: string;

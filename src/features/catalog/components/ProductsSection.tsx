@@ -1,4 +1,4 @@
-import { Filter, Grid, List, Package } from "lucide-react";
+import { Filter, Grid, List } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/shared/ui/sheet";
 
@@ -7,6 +7,7 @@ import { SortDropdown, SortOption } from "./SortDropdown";
 import { ProductCard } from "./ProductCard";
 
 import type { Product, ProductFilter } from "../types/product";
+import { Carro } from "@/app/types/auth";
 
 interface ProductsSectionProps {
   products: Product[];
@@ -20,7 +21,7 @@ interface ProductsSectionProps {
   onToggleWishlist: (productId: string) => void;
   onAddToCart: (productId: string) => void;
   onVerProducto: (productId: string) => void;
-  userCars: any[]; // si luego defines un tipo Car, lo cambiamos aquí
+  userCars: Carro[]; // si luego defines un tipo Car, lo cambiamos aquí
 }
 
 export function ProductsSection({
@@ -131,9 +132,9 @@ export function ProductsSection({
               <ProductCard
                 key={product.id}
                 product={product}
-                onAddToCart={onAddToCart}
-                onWishlistToggle={onToggleWishlist}
-                onVerProducto={onVerProducto}
+                onAddToCart={() => onAddToCart(product.id)}
+                onWishlistToggle={() => onToggleWishlist(product.id)}
+                onVerProducto={() => onVerProducto(product.id)}
                 isInWishlist={isInWishlist(product.id)}
                 viewMode={viewMode}
                 userCars={userCars}

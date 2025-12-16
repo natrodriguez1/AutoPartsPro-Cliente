@@ -138,3 +138,37 @@ export const serviceCategories = [
   { id: "climatizacion", label: "Aire Acondicionado", count: 4 },
   { id: "emergencia", label: "Servicios de Emergencia", count: 2 }
 ];
+
+export // Servicios relacionados
+const serviciosRelacionados = [
+  {
+    id: "related_service_1",
+    name: "Cambio de Aceite Premium",
+    price: 45,
+    duration: "30 min",
+    rating: 4.8,
+    reviewCount: 156,
+    image: "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=300&h=300&fit=crop",
+    tallerNombre: "AutoMaster Quito"
+  },
+  {
+    id: "related_service_2", 
+    name: "Alineación 3D Computarizada",
+    price: 25,
+    duration: "45 min",
+    rating: 4.9,
+    reviewCount: 89,
+    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=300&h=300&fit=crop",
+    tallerNombre: "MecánicaTotal Cuenca"
+  },
+  {
+    id: "related_service_3",
+    name: "Revisión de Frenos Completa",
+    price: 35,
+    duration: "60 min",
+    rating: 4.7,
+    reviewCount: 234,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop",
+    tallerNombre: "TallerPro Guayaquil"
+  }
+];

@@ -139,4 +139,42 @@ export const productCategories = [
   { id: "herramientas", label: "Herramientas y Equipos", count: 9 }
 ];
 
+// Productos relacionados
+export const productosRelacionados = [
+  {
+    id: "related_001",
+    name: "Pastillas de Freno Cerámicas Bosch",
+    price: 89,
+    originalPrice: 119,
+    rating: 4.8,
+    reviewCount: 234,
+    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop",
+    isSale: true,
+    salePercentage: 25
+  },
+  {
+    id: "related_002", 
+    name: "Discos de Freno Ventilados Brembo",
+    price: 156,
+    rating: 4.7,
+    reviewCount: 189,
+    image: "https://images.unsplash.com/photo-1563592181-b4fa94773834?w=300&h=300&fit=crop"
+  },
+  {
+    id: "related_003",
+    name: "Líquido de Frenos DOT 4",
+    price: 25,
+    rating: 4.5,
+    reviewCount: 156,
+    image: "https://images.unsplash.com/photo-1574321017281-7798ba7e4ad1?w=300&h=300&fit=crop"
+  },
+  {
+    id: "related_004",
+    name: "Aceite de Motor Sintético",
+    price: 35,
+    rating: 4.9,
+    reviewCount: 445,
+    image: "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=300&h=300&fit=crop"
+  }
+];
 

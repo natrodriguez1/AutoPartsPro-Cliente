@@ -15,7 +15,7 @@ import type { BaseFilters } from "../types/filters";
 
 interface FilterPanelProps {
   filters: BaseFilters;
-  onFiltersChange: (filters: any) => void;
+  onFiltersChange: (filters: BaseFilters) => void;
   isMobile?: boolean;
   isServiceMode?: boolean;
 }

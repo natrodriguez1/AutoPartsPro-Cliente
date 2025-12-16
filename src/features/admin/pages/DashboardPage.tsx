@@ -52,6 +52,7 @@ const estadisticasGenerales = {
   transaccionesMes: 1890,
   crecimientoMensual: 12.5
 };
+
 //TODO: llama a top 5 productos más populares
 const productosPopulares = [
   { id: "1", nombre: "Pastillas de Freno Cerámicas", ventas: 245, ingresos: 29400, categoria: "Frenos" },

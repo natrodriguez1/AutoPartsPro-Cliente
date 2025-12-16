@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
@@ -7,17 +7,16 @@ import { toast } from "sonner";
 import { useCart } from "@/features/cart/store/cart.store";
 import { useAuth } from "@/app/providers/AuthContext";
 
-import { fetchProducts } from "@/features/catalog/services/products.api";
-import { fetchServices } from "../services/services.api";
+import { getProducts } from "@/features/catalog/services/products.service";
+import { getServices } from "../services/services.service";
 
-import type { Product, ProductFilter } from "../types/product";
-import type { Service, ServiceFilter } from "../types/service";
+import type { Product} from "../types/product";
+import type { Service} from "../types/service";
 import type { SortOption } from "../components/SortDropdown";
 
 import { ProductsSection } from "../components/ProductsSection";
 import { ServicesSection } from "../components/ServicesSection";
 import { FeaturedWorkshopsSection } from "../components/HomeFeaturedWorkshops";
-import { getProductCompatibility } from "../utils/productCompatibility";
 
 import { useProductFilters } from "../hooks/useProductFilters";
 import { useServiceFilters } from "../hooks/useServiceFilters";
@@ -43,9 +42,16 @@ export function HomePage() {
   // --- Fetch de productos ---
   useEffect(() => {
     let alive = true;
-    fetchProducts().then((data) => {
-      if (alive) setProducts(data as unknown as Product[]);
-    });
+
+    getProducts()
+      .then((data) => {
+        if (alive) setProducts(data);
+      })
+      .catch((error) => {
+        console.error("Error cargando productos:", error);
+        // aquí podrías setear un estado de error si quieres
+      });
+
     return () => {
       alive = false;
     };
@@ -53,7 +59,19 @@ export function HomePage() {
 
   // --- Fetch de servicios ---
   useEffect(() => {
-    fetchServices().then((data) => setServices(data as Service[]));
+    let alive = true;
+
+    getServices()
+      .then((data) => {
+        if (alive) setServices(data);
+      })
+      .catch((error) => {
+        console.error("Error cargando servicios:", error);
+      });
+
+    return () => {
+      alive = false;
+    };
   }, []);
 
   // --- Filtros de productos ---

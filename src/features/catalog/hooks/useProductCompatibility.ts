@@ -5,9 +5,18 @@ import type { ProductCompatibility } from "../types/product";
 import { getProductCompatibility } from "../utils/productCompatibility";
 
 export function useProductCompatibility(
-  product: Product,
+  product: Product | null | undefined,
   userCars: Carro[] = []
 ): ProductCompatibility {
-  return useMemo(() => getProductCompatibility(product, userCars),
-    [product.compatibility, userCars]);
+  return useMemo<ProductCompatibility>(() =>{
+    if (!product) {
+      return {
+        isUniversal: false,
+        isSpecificCompatible: false,
+        matchedCars: [],
+      };
+    }
+
+    return getProductCompatibility(product, userCars);
+  }, [product, userCars]);
 }

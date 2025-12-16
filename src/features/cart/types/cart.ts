@@ -1,4 +1,4 @@
-import type { ProductCore } from "@/features/catalog/types/product";
+import type { ProductCore } from "@/domain/product";
 
 
 export type CartItem = ProductCore  & {
@@ -14,6 +14,11 @@ export interface CartState {
   remove: (id: string) => void;
   restore: (id: string) => void;
   updateQty: (id: string, qty: number) => void;
+
+  discountCode: string;
+  discountPercentage: number;
+  applyDiscount: (code: string) => { ok: boolean; percentage?: number };
+  clearDiscount: () => void;
 
   toggleWishlist: (p: ProductCore) => void;
   clear: () => void;
