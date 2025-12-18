@@ -10,6 +10,8 @@ export type Product = ProductCore & {
   description?: string;
   workshopId?: string;
   workshopName?: string;
+  image?: string;        // la “principal” (para cards)
+  images?: string[];     // galería
 };
 
 export type SearchProduct = ProductCore;

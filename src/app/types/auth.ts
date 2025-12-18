@@ -27,8 +27,11 @@ export type Usuario = {
 
 export type AuthContextType = {
   usuario: Usuario | null;
+  token: string | null;
+
   cargando: boolean;
-  iniciarSesion: (usuario: Usuario) => void;
+  
+  iniciarSesion: (usuario: Usuario, options?: { remember?: boolean; token?: string }) => void;
   cerrarSesion: () => void;
   actualizarCarros: (carros: Carro[]) => void;
 }

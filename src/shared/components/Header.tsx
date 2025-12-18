@@ -6,21 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuGroup } from "../ui/dropdown-menu";
 import { useAuth } from "@/app/providers/AuthContext";
 import { useNavigate } from "react-router-dom";
-import React, { useState, useMemo, useEffect } from "react";
 import { useCart } from "@/features/cart/store/cart.store";
-import { Product } from "@/features/catalog/types/product";
-
-interface HeaderProps {
-  cartItemsCount?: number;
-  onIrCarrito?: () => void;
-  onIrHome?: () => void;
-  onIrPanel?: () => void;
-  onIrPerfil?: () => void;
-  onIrVehiculos?: () => void;
-  onIrDirecciones?: () => void;
-  onIrPedidos?: () => void;
-  onIrConfiguracion?: () => void;
-}
 
 export function Header() {
   const { usuario, cerrarSesion } = useAuth();

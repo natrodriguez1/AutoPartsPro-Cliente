@@ -1,43 +1,47 @@
 import api from "@/shared/lib/axios";
 import type { Product } from "../types/product";
 import { productsMock } from "../data/product.mock";
+import { getProductImagesMap } from "./images.service";
 
-// 👇 Cambia esto a false cuando ya tengas el backend listo
-const USE_MOCKS = true;
+const USE_MOCKS = false;
 
-/**
- * Devuelve todos los productos del catálogo.
- * - MODO mock: usa productsMock
- * - MODO api: consulta al backend
- */
 export async function getProducts(): Promise<Product[]> {
-  if (USE_MOCKS) {
-    // productsMock ya tiene la forma de Product
-    return productsMock as Product[];
-  }
+  if (USE_MOCKS) return productsMock as Product[];
 
-  const { data } = await api.get<Product[]>("/products");
-  return data;
+  const [{ data: products }, imagesMap] = await Promise.all([
+    api.get<Product[]>("/products/"),
+    getProductImagesMap(),
+  ]);
+
+  return products.map((p) => {
+    const imgs = imagesMap.get(String(p.id)) ?? [];
+    return {
+      ...p,
+      images: imgs,
+      image: imgs[0] ?? p.image, // card usa la primera si existe
+    };
+  });
 }
 
-/**
- * Devuelve el detalle de un producto por id.
- * - MODO mock: busca en productsMock
- * - MODO api: consulta al backend
- */
 export async function getProductById(id: string): Promise<Product | null> {
   if (USE_MOCKS) {
-    const normalizedId = String(id);
-    const found = (productsMock as Product[]).find(
-      (p) => String(p.id) === normalizedId
-    );
+    const found = (productsMock as Product[]).find((p) => String(p.id) === String(id));
     return found ?? null;
   }
 
   try {
-    const { data } = await api.get<Product>(`/products/${id}`);
-    // por si acaso el backend responde 200 pero sin data usable
-    return data ?? null;
+    const [{ data: product }, imagesMap] = await Promise.all([
+      api.get<Product>(`/products/${id}/`), // <-- slash final
+      getProductImagesMap(),
+    ]);
+
+    const imgs = imagesMap.get(String(product.id)) ?? [];
+
+    return {
+      ...product,
+      images: imgs,
+      image: imgs[0] ?? product.image,
+    };
   } catch (error) {
     console.error("Error obteniendo producto por id:", error);
     return null;

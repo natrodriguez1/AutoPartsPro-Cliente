@@ -8,4 +8,7 @@ export type ProductCore = {
   category: string;
   isSale?: boolean;
   salePercentage?: number;
+  stock?: number;
+  brand_id?: number;
+  category_id?: number;
 };

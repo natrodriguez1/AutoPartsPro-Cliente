@@ -153,17 +153,18 @@ export function ProductDetailPage() {
   const compatibility = useProductCompatibility(product, userCars);
 
   const imagenesProducto = useMemo(() => {
-    const base =
-      product?.image ||
+    const placeholder =
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&h=600&fit=crop";
 
-    return [
-      base,
-      "https://images.unsplash.com/photo-1563592181-b4fa94773834?w=600&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1574321017281-7798ba7e4ad1?w=600&h=600&fit=crop",
-      "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=600&h=600&fit=crop",
-    ];
-  }, [product?.image]);
+    // si vienen imágenes reales, úsalas
+    if (product?.images && product.images.length > 0) return product.images;
+
+    // fallback a la image principal si existe
+    if (product?.image) return [product.image];
+
+    // último fallback
+    return [placeholder];
+  }, [product]);
 
   const onRegresar = () => navigate(-1);
 

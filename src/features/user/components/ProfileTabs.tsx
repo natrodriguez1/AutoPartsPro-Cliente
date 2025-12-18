@@ -32,6 +32,8 @@ import {
 import { toast } from "sonner";
 import { Switch } from "@/shared/ui/switch";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
+import { updateUser } from "@/features/auth/services/auth.service";
+import { useAuth } from "@/app/providers/AuthContext";
 
 type PerfilTab = "personal" | "carros" | "pedidos" | "direcciones" | "configuracion";
 
@@ -163,6 +165,9 @@ export function ProfileTabs({
   const [telefono, setTelefono] = useState("");
   const [direccion, setDireccion] = useState("Av. Amazonas N24-03 y Colón, Quito");
 
+  const { iniciarSesion } = useAuth();
+  const [saving, setSaving] = useState(false);
+
   // Carros
   const [carros, setCarros] = useState<Carro[]>(usuario.carros ?? carrosUsuario);
   const [mostrarDialogoAgregarCarro, setMostrarDialogoAgregarCarro] = useState(false);
@@ -203,9 +208,34 @@ export function ProfileTabs({
     setCarros(usuario.carros ?? carrosUsuario);
   }, [usuario]);
 
-  const handleGuardarCambios = () => {
-    toast.success("Perfil actualizado correctamente");
-    setEditando(false);
+  const handleGuardarCambios = async () => {
+    const idNum = Number(usuario.id);
+    if (!Number.isFinite(idNum)) {
+      toast.error("No se pudo actualizar: id inválido.");
+      return;
+    }
+
+    const roleId = usuario.tipo === "admin" ? 1 : usuario.tipo === "taller" ? 3 : 2;
+
+    setSaving(true);
+    try {
+      const updated = await updateUser(idNum, {
+        name: nombres,
+        email,
+        phone: telefono,
+        role_id: roleId, // opcional si tu backend lo deja opcional
+      });
+
+      // Actualiza el usuario en sesión (reutiliza lo que ya tienes)
+      iniciarSesion(updated, { remember: true });
+
+      toast.success("Perfil actualizado correctamente");
+      setEditando(false);
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "No se pudo actualizar el perfil");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleAgregarCarro = () => {
@@ -334,12 +364,13 @@ export function ProfileTabs({
                     </div>
                     <Button
                       variant={editando ? "default" : "outline"}
+                      disabled={saving}
                       onClick={() => (editando ? handleGuardarCambios() : setEditando(true))}
                     >
                       {editando ? (
                         <>
                           <Save className="h-4 w-4 mr-2" />
-                          Guardar
+                          {saving ? "Guardando..." : "Guardar"}
                         </>
                       ) : (
                         "Editar"
