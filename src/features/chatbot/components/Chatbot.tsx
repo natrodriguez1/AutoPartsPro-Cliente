@@ -11,11 +11,13 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useOttoChat } from "../hooks/useOttoChat";
+import ImageUploadButton from "@/shared/ui/imageUploadButtonComponent";
 
 export function Chatbot() {
   const [abierto, setAbierto] = useState(false);
   const [minimizado, setMinimizado] = useState(false);
   const [nuevoMensaje, setNuevoMensaje] = useState("");
+  const [imagenSeleccionada, setImagenSeleccionada] = useState<File | null>(null);
   
   const { mensajes, escribiendo, enviarMensaje } = useOttoChat();
 
@@ -23,9 +25,16 @@ export function Chatbot() {
     if (!nuevoMensaje.trim()) return;
     
     const mensaje = nuevoMensaje;
-    setNuevoMensaje(""); // Limpiar input inmediatamente
+    const imagen = imagenSeleccionada;
     
-    await enviarMensaje(mensaje);
+    setNuevoMensaje(""); // Limpiar input inmediatamente
+    setImagenSeleccionada(null); // Limpiar imagen
+    
+    await enviarMensaje(mensaje, imagen);
+  };
+
+  const handleImageSelect = (file: File | null) => {
+    setImagenSeleccionada(file);
   };
 
   return (
@@ -135,12 +144,31 @@ export function Chatbot() {
                         value={nuevoMensaje}
                         onChange={(e) => setNuevoMensaje(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleEnviar()}
-                        className="text-sm"
+                        className="text-sm flex-1"
                       />
-                      <Button onClick={handleEnviar} disabled={!nuevoMensaje.trim()} size="sm">
+                      <ImageUploadButton 
+                        onImageSelect={handleImageSelect}
+                        size="icon"
+                        variant="outline"
+                        disabled={escribiendo}
+                        showFileName={false}
+                      />
+                      <Button 
+                        onClick={handleEnviar} 
+                        disabled={!nuevoMensaje.trim() || escribiendo} 
+                        size="icon"
+                      >
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
+                    
+                    {/* Mostrar imagen seleccionada debajo del input */}
+                    {imagenSeleccionada && (
+                      <div className="mt-2 text-xs text-muted-foreground flex items-center gap-2">
+                        <span className="truncate">📎 {imagenSeleccionada.name}</span>
+                      </div>
+                    )}
+                    
                     <p className="text-xs text-muted-foreground mt-2 text-center">
                       💡 Pregúntame sobre problemas, talleres o mantenimiento
                     </p>
