@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -10,12 +11,15 @@ import { Eye, EyeOff, Car, User, Building, Mail, Phone, Lock } from "lucide-reac
 import { useAuth } from "@/app/providers/AuthContext";
 import { toast } from "sonner";
 
-interface LoginProps {
-  onCambiarVista: () => void;
-}
-
-export function LoginPage({ onCambiarVista }: LoginProps) {
+export function LoginPage() {
+  const navigate = useNavigate();
   const { iniciarSesion } = useAuth();
+
+  const irDespuesDeLogin = (tipo: "admin" | "taller" | "usuario") => {
+    if (tipo === "admin") return navigate("/admin", { replace: true });
+    if (tipo === "taller") return navigate("/taller", { replace: true });
+    return navigate("/", { replace: true }); // o "/perfil" si prefieres
+  };
   
   // Estados para usuario normal
   const [emailUsuario, setEmailUsuario] = useState("");
@@ -49,7 +53,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
 
   const [loading, setLoading] = useState(false);
 
-  const handleLoginUsuario = async (e: React.FormEvent) => {
+  const handleLoginUsuario = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
@@ -66,8 +70,9 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
           telefono: "+593 2 999 0000",
           permisos: ["gestion_usuarios", "gestion_talleres", "reportes", "configuracion"]
         });
+
         toast.success("¡Bienvenido Administrador!");
-        onCambiarVista();
+        irDespuesDeLogin("admin");
         return;
       }
       
@@ -79,7 +84,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
       });
       
       toast.success("¡Bienvenido de nuevo!");
-      onCambiarVista();
+      irDespuesDeLogin("usuario");
     } catch (error) {
       toast.error("Error al iniciar sesión. Verifica tus credenciales.");
     } finally {
@@ -87,7 +92,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
     }
   };
 
-  const handleRegistroUsuario = async (e: React.FormEvent) => {
+  const handleRegistroUsuario = async (e: FormEvent) => {
     e.preventDefault();
     
     if (passwordRegUsuario !== confirmPasswordUsuario) {
@@ -109,7 +114,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
       });
       
       toast.success("¡Cuenta creada exitosamente!");
-      onCambiarVista();
+      irDespuesDeLogin("usuario");
     } catch (error) {
       toast.error("Error al crear la cuenta. Intenta de nuevo.");
     } finally {
@@ -117,7 +122,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
     }
   };
 
-  const handleLoginTaller = async (e: React.FormEvent) => {
+  const handleLoginTaller = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
@@ -135,7 +140,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
           permisos: ["gestion_usuarios", "gestion_talleres", "reportes", "configuracion"]
         });
         toast.success("¡Bienvenido Administrador!");
-        onCambiarVista();
+        irDespuesDeLogin("admin");
         return;
       }
       
@@ -148,7 +153,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
       });
       
       toast.success("¡Bienvenido al panel de taller!");
-      onCambiarVista();
+      irDespuesDeLogin("taller");
     } catch (error) {
       toast.error("Error al iniciar sesión. Verifica tus credenciales.");
     } finally {
@@ -156,7 +161,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
     }
   };
 
-  const handleRegistroTaller = async (e: React.FormEvent) => {
+  const handleRegistroTaller = async (e: FormEvent) => {
     e.preventDefault();
     
     if (passwordRegTaller !== confirmPasswordTaller) {
@@ -178,7 +183,7 @@ export function LoginPage({ onCambiarVista }: LoginProps) {
       });
       
       toast.success("¡Taller registrado exitosamente!");
-      onCambiarVista();
+      irDespuesDeLogin("taller");
     } catch (error) {
       toast.error("Error al registrar el taller. Intenta de nuevo.");
     } finally {

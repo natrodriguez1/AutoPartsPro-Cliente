@@ -42,10 +42,6 @@ import {
 import { useAuth } from "@/app/providers/AuthContext";
 import { toast } from "sonner"
 
-interface PanelAdminProps {
-  onCambiarVista: (vista: string) => void;
-}
-
 // TODO: llamada a estadisticas del taller (ganancia total, ganancias por mes, usuarios activos, talleres activos, transac totales, transac al mes y crecimiento mensual)
 const estadisticasGenerales = {
   gananciasTotal: 458750,
@@ -56,6 +52,7 @@ const estadisticasGenerales = {
   transaccionesMes: 1890,
   crecimientoMensual: 12.5
 };
+
 //TODO: llama a top 5 productos más populares
 const productosPopulares = [
   { id: "1", nombre: "Pastillas de Freno Cerámicas", ventas: 245, ingresos: 29400, categoria: "Frenos" },
@@ -184,7 +181,8 @@ const usuariosRegistrados = [
   }
 ];
 
-export function AdminDashboard({ onCambiarVista }: PanelAdminProps) {
+export function AdminDashboard() {
+  
   const { usuario } = useAuth();
   const [tabActiva, setTabActiva] = useState("dashboard");
   const [busquedaUsuarios, setBusquedaUsuarios] = useState("");

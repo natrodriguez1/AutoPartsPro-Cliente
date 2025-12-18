@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -28,11 +29,6 @@ import {
   XCircle
 } from "lucide-react";
 import { toast } from "sonner";
-
-interface GestionUsuariosProps {
-  onRegresar: () => void;
-  onCambiarVista: (vista: string) => void;
-}
 
 // Definición de roles y permisos
 const roles = {
@@ -158,7 +154,14 @@ const usuariosTaller = [
   }
 ];
 
-export function UsersPage({ onRegresar, onCambiarVista }: GestionUsuariosProps) {
+export function UsersPage() {
+
+  const navigate = useNavigate();
+
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
+  
   const [busqueda, setBusqueda] = useState<string>("");
   const [filtroRol, setFiltroRol] = useState<string>("todos");
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
@@ -255,7 +258,7 @@ export function UsersPage({ onRegresar, onCambiarVista }: GestionUsuariosProps) 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onRegresar}>
+          <Button variant="ghost" onClick={handleRegresar}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Regresar al Panel
           </Button>

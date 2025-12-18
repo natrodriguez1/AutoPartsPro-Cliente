@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -26,11 +27,6 @@ import {
   DollarSign
 } from "lucide-react";
 import { toast } from "sonner";
-
-interface OrdenesProps {
-  onRegresar: () => void;
-  onCambiarVista: (vista: string) => void;
-}
 
 //TODO: llamada al detalle de las ordenes del cliente
 const ordenesClientes = [
@@ -140,7 +136,14 @@ const clientesFrecuentes = [
   { id: "cli_005", nombre: "Roberto Vargas", email: "roberto.vargas@email.com", telefono: "+593-3-456-7890", ordenes: 5, ultimaVisita: "2024-01-24" }
 ];
 
-export function OrdersPage({ onRegresar, onCambiarVista }: OrdenesProps) {
+export function OrdersPage() {
+
+  const navigate = useNavigate();
+
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
+
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
   const [filtroCliente, setFiltroCliente] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState<string>("");
@@ -241,7 +244,7 @@ export function OrdersPage({ onRegresar, onCambiarVista }: OrdenesProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onRegresar}>
+          <Button variant="ghost" onClick={handleRegresar}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Regresar al Panel
           </Button>

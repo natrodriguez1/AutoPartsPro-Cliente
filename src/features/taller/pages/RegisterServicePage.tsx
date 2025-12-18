@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
@@ -20,12 +21,14 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-interface RegistroServiciosProps {
-  onRegresar: () => void;
-  onCambiarVista: (vista: string) => void;
-}
+export function RegisterServicePage() {
 
-export function RegisterServicePage({ onRegresar, onCambiarVista }: RegistroServiciosProps) {
+  const navigate = useNavigate();
+
+  const handleRegresar = () => {
+    navigate("/taller/servicios");
+  };
+
   const [servicio, setServicio] = useState({
     nombre: "",
     categoria: "",
@@ -82,7 +85,7 @@ export function RegisterServicePage({ onRegresar, onCambiarVista }: RegistroServ
     }
 
     toast.success(`Servicio "${servicio.nombre}" registrado exitosamente`);
-    onRegresar();
+    handleRegresar();
   };
 
   const agregarIncluye = () => {
@@ -140,7 +143,7 @@ export function RegisterServicePage({ onRegresar, onCambiarVista }: RegistroServ
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" onClick={onRegresar}>
+        <Button variant="ghost" onClick={handleRegresar}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver al Panel
         </Button>
@@ -434,7 +437,7 @@ export function RegisterServicePage({ onRegresar, onCambiarVista }: RegistroServ
                 <Save className="h-4 w-4 mr-2" />
                 Guardar Servicio
               </Button>
-              <Button type="button" variant="outline" onClick={onRegresar} className="w-full">
+              <Button type="button" variant="outline" onClick={handleRegresar} className="w-full">
                 Cancelar
               </Button>
             </div>

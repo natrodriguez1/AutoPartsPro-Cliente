@@ -1,35 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-interface Usuario {
-  id: string;
-  tipo: 'usuario' | 'taller' | 'admin';
-  nombres?: string;
-  nombre?: string;
-  email: string;
-  telefono?: string;
-  ruc?: string;
-  permisos?: string[];
-  carros?: Array<{
-    id: string;
-    marca: string;
-    modelo: string;
-    año: number;
-    motor?: string;
-    combustible?: string;
-    kilometraje?: number;
-    vin?: string;
-    color?: string;
-    fechaCompra?: string;
-  }>;
-}
-
-interface AuthContextType {
-  usuario: Usuario | null;
-  cargando: boolean;
-  iniciarSesion: (usuario: Usuario) => void;
-  cerrarSesion: () => void;
-  actualizarCarros: (carros: any[]) => void;
-}
+import type { Usuario, Carro, AuthContextType } from '../types/auth';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -53,6 +23,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const iniciarSesion = (nuevoUsuario: Usuario) => {
+    const usuarioFinal: Usuario =
+    nuevoUsuario.tipo === "usuario" && !nuevoUsuario.carros
+      ? { ...nuevoUsuario, carros: [/* default cars */] }
+      : nuevoUsuario;
+
     // Agregar carros por defecto para usuarios nuevos
     if (nuevoUsuario.tipo === 'usuario' && !nuevoUsuario.carros) {
       nuevoUsuario.carros = [
@@ -83,8 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ];
     }
 
-    setUsuario(nuevoUsuario);
-    localStorage.setItem('usuario', JSON.stringify(nuevoUsuario));
+    setUsuario(usuarioFinal);
+    localStorage.setItem("usuario", JSON.stringify(usuarioFinal));
   };
 
   const cerrarSesion = () => {
@@ -92,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem('usuario');
   };
 
-  const actualizarCarros = (carros: any[]) => {
+  const actualizarCarros = (carros: Carro[]) => {
     if (usuario && usuario.tipo === 'usuario') {
       const usuarioActualizado = { ...usuario, carros };
       setUsuario(usuarioActualizado);

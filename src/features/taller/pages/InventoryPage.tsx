@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
@@ -6,201 +8,234 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Separator } from "@/shared/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/shared/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { 
-  ArrowLeft, 
-  Plus, 
-  Search, 
-  Package, 
-  AlertTriangle, 
-  TrendingDown, 
-  TrendingUp, 
-  Edit, 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/shared/ui/table";
+import {
+  ArrowLeft,
+  Plus,
+  Search,
+  Package,
+  AlertTriangle,
+  TrendingDown,
+  TrendingUp,
+  Edit,
   Trash2,
   Eye,
   Download,
   Upload,
-  Filter,
-  BarChart3
+  BarChart3,
 } from "lucide-react";
 import { ImageWithFallback } from "@/shared/components/ImageWithFallback";
 import { toast } from "sonner";
+import type { InventoryStatus, InventoryItem, InventoryMovement} from "../types/inventory";
 
-interface InventarioTallerProps {
-  onRegresar: () => void;
-  onCambiarVista: (vista: string) => void;
-}
-
-// TODO: llamada a items del inventario
-const inventarioItems = [
+// TODO: reemplazar estos mocks por llamada al backend
+const inventoryItems: InventoryItem[] = [
   {
     id: "inv_001",
-    codigo: "BRK-001",
-    nombre: "Pastillas de Freno Cerámicas Bosch",
-    categoria: "frenos",
-    marca: "Bosch",
-    stockActual: 5,
-    stockMinimo: 10,
-    stockMaximo: 50,
-    precioCompra: 65,
-    precioVenta: 89,
-    ubicacion: "A-1-01",
-    proveedor: "Distribuidora AutoParts",
-    ultimaEntrada: "2024-01-15",
-    ultimaSalida: "2024-01-20",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop",
-    estado: "bajo_stock"
+    code: "BRK-001",
+    name: "Pastillas de Freno Cerámicas Bosch",
+    category: "frenos",
+    brand: "Bosch",
+    currentStock: 5,
+    minStock: 10,
+    maxStock: 50,
+    purchasePrice: 65,
+    price: 89,
+    location: "A-1-01",
+    supplier: "Distribuidora AutoParts",
+    lastInboundDate: "2024-01-15",
+    lastOutboundDate: "2024-01-20",
+    image:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop",
+    status: "bajo_stock",
   },
   {
     id: "inv_002",
-    codigo: "ENG-002",
-    nombre: "Filtro de Aire K&N Performance",
-    categoria: "motor",
-    marca: "K&N",
-    stockActual: 25,
-    stockMinimo: 15,
-    stockMaximo: 60,
-    precioCompra: 32,
-    precioVenta: 45,
-    ubicacion: "B-2-03",
-    proveedor: "Repuestos Premium",
-    ultimaEntrada: "2024-01-18",
-    ultimaSalida: "2024-01-22",
-    image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=200&h=200&fit=crop",
-    estado: "normal"
+    code: "ENG-002",
+    name: "Filtro de Aire K&N Performance",
+    category: "motor",
+    brand: "K&N",
+    currentStock: 25,
+    minStock: 15,
+    maxStock: 60,
+    purchasePrice: 32,
+    price: 45,
+    location: "B-2-03",
+    supplier: "Repuestos Premium",
+    lastInboundDate: "2024-01-18",
+    lastOutboundDate: "2024-01-22",
+    image:
+      "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=200&h=200&fit=crop",
+    status: "normal",
   },
   {
     id: "inv_003",
-    codigo: "TIR-003",
-    nombre: "Neumático Bridgestone 205/55R16",
-    categoria: "neumaticos",
-    marca: "Bridgestone",
-    stockActual: 8,
-    stockMinimo: 12,
-    stockMaximo: 30,
-    precioCompra: 220,
-    precioVenta: 285,
-    ubicacion: "C-1-05",
-    proveedor: "LlantaCenter",
-    ultimaEntrada: "2024-01-10",
-    ultimaSalida: "2024-01-19",
-    image: "https://images.unsplash.com/photo-1449667585940-75d7cfeae11b?w=200&h=200&fit=crop",
-    estado: "bajo_stock"
+    code: "TIR-003",
+    name: "Neumático Bridgestone 205/55R16",
+    category: "neumaticos",
+    brand: "Bridgestone",
+    currentStock: 8,
+    minStock: 12,
+    maxStock: 30,
+    purchasePrice: 220,
+    price: 285,
+    location: "C-1-05",
+    supplier: "LlantaCenter",
+    lastInboundDate: "2024-01-10",
+    lastOutboundDate: "2024-01-19",
+    image:
+      "https://images.unsplash.com/photo-1449667585940-75d7cfeae11b?w=200&h=200&fit=crop",
+    status: "bajo_stock",
   },
   {
     id: "inv_004",
-    codigo: "BAT-004",
-    nombre: "Batería Bosch S4 12V 60Ah",
-    categoria: "electrico",
-    marca: "Bosch",
-    stockActual: 3,
-    stockMinimo: 5,
-    stockMaximo: 20,
-    precioCompra: 95,
-    precioVenta: 120,
-    ubicacion: "D-1-02",
-    proveedor: "Distribuidora AutoParts",
-    ultimaEntrada: "2024-01-12",
-    ultimaSalida: "2024-01-21",
-    image: "https://images.unsplash.com/photo-1620064723069-5e2b2bd2102f?w=200&h=200&fit=crop",
-    estado: "critico"
+    code: "BAT-004",
+    name: "Batería Bosch S4 12V 60Ah",
+    category: "electrico",
+    brand: "Bosch",
+    currentStock: 3,
+    minStock: 5,
+    maxStock: 20,
+    purchasePrice: 95,
+    price: 120,
+    location: "D-1-02",
+    supplier: "Distribuidora AutoParts",
+    lastInboundDate: "2024-01-12",
+    lastOutboundDate: "2024-01-21",
+    image:
+      "https://images.unsplash.com/photo-1620064723069-5e2b2bd2102f?w=200&h=200&fit=crop",
+    status: "critico",
   },
   {
     id: "inv_005",
-    codigo: "SUS-005",
-    nombre: "Amortiguadores Monroe (Par)",
-    categoria: "suspension",
-    marca: "Monroe",
-    stockActual: 12,
-    stockMinimo: 8,
-    stockMaximo: 25,
-    precioCompra: 140,
-    precioVenta: 180,
-    ubicacion: "E-2-01",
-    proveedor: "SuspensionPro",
-    ultimaEntrada: "2024-01-16",
-    ultimaSalida: "2024-01-20",
-    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop",
-    estado: "normal"
+    code: "SUS-005",
+    name: "Amortiguadores Monroe (Par)",
+    category: "suspension",
+    brand: "Monroe",
+    currentStock: 12,
+    minStock: 8,
+    maxStock: 25,
+    purchasePrice: 140,
+    price: 180,
+    location: "E-2-01",
+    supplier: "SuspensionPro",
+    lastInboundDate: "2024-01-16",
+    lastOutboundDate: "2024-01-20",
+    image:
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=200&h=200&fit=crop",
+    status: "normal",
   },
   {
     id: "inv_006",
-    codigo: "OIL-006",
-    nombre: "Aceite Mobil 1 Sintético 5W-30",
-    categoria: "motor",
-    marca: "Mobil 1",
-    stockActual: 0,
-    stockMinimo: 20,
-    stockMaximo: 100,
-    precioCompra: 25,
-    precioVenta: 35,
-    ubicacion: "F-1-03",
-    proveedor: "Lubricantes Premium",
-    ultimaEntrada: "2024-01-05",
-    ultimaSalida: "2024-01-23",
-    image: "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=200&h=200&fit=crop",
-    estado: "agotado"
-  }
+    code: "OIL-006",
+    name: "Aceite Mobil 1 Sintético 5W-30",
+    category: "motor",
+    brand: "Mobil 1",
+    currentStock: 0,
+    minStock: 20,
+    maxStock: 100,
+    purchasePrice: 25,
+    price: 35,
+    location: "F-1-03",
+    supplier: "Lubricantes Premium",
+    lastInboundDate: "2024-01-05",
+    lastOutboundDate: "2024-01-23",
+    image:
+      "https://images.unsplash.com/photo-1609878146559-bee1e55e0e99?w=200&h=200&fit=crop",
+    status: "agotado",
+  },
 ];
-//TODO: llamada a movimientos del inventario
-const movimientosInventario = [
+
+const inventoryMovements: InventoryMovement[] = [
   {
     id: "mov_001",
-    fecha: "2024-01-23",
-    tipo: "salida",
-    producto: "Aceite Mobil 1 Sintético 5W-30",
-    cantidad: 5,
-    motivo: "Venta",
-    usuario: "Juan Pérez",
-    referencia: "VTA-2024-001"
+    date: "2024-01-23",
+    type: "salida",
+    product: "Aceite Mobil 1 Sintético 5W-30",
+    quantity: 5,
+    reason: "Venta",
+    user: "Juan Pérez",
+    reference: "VTA-2024-001",
   },
   {
     id: "mov_002",
-    fecha: "2024-01-22",
-    tipo: "salida",
-    producto: "Filtro de Aire K&N Performance",
-    cantidad: 2,
-    motivo: "Venta",
-    usuario: "María González",
-    referencia: "VTA-2024-002"
+    date: "2024-01-22",
+    type: "salida",
+    product: "Filtro de Aire K&N Performance",
+    quantity: 2,
+    reason: "Venta",
+    user: "María González",
+    reference: "VTA-2024-002",
   },
   {
     id: "mov_003",
-    fecha: "2024-01-21",
-    tipo: "salida",
-    producto: "Batería Bosch S4 12V 60Ah",
-    cantidad: 1,
-    motivo: "Instalación",
-    usuario: "Carlos López",
-    referencia: "SRV-2024-015"
+    date: "2024-01-21",
+    type: "salida",
+    product: "Batería Bosch S4 12V 60Ah",
+    quantity: 1,
+    reason: "Instalación",
+    user: "Carlos López",
+    reference: "SRV-2024-015",
   },
   {
     id: "mov_004",
-    fecha: "2024-01-20",
-    tipo: "entrada",
-    producto: "Pastillas de Freno Cerámicas Bosch",
-    cantidad: 10,
-    motivo: "Compra",
-    usuario: "Sistema",
-    referencia: "CMP-2024-008"
-  }
+    date: "2024-01-20",
+    type: "entrada",
+    product: "Pastillas de Freno Cerámicas Bosch",
+    quantity: 10,
+    reason: "Compra",
+    user: "Sistema",
+    reference: "CMP-2024-008",
+  },
 ];
 
-export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerProps) {
+// === Page de ruta: ya NO recibe props
+export function InventoryPage() {
+  const navigate = useNavigate();
+
   const [filtroCategoria, setFiltroCategoria] = useState<string>("todos");
   const [filtroEstado, setFiltroEstado] = useState<string>("todos");
   const [busqueda, setBusqueda] = useState<string>("");
   const [mostrarDialogoAjuste, setMostrarDialogoAjuste] = useState(false);
-  const [itemSeleccionado, setItemSeleccionado] = useState<any>(null);
+  const [itemSeleccionado, setItemSeleccionado] = useState<InventoryItem | null>(
+    null
+  );
   const [ajusteStock, setAjusteStock] = useState({
     tipo: "entrada",
     cantidad: "",
-    motivo: ""
+    motivo: "",
   });
 
-  const getEstadoBadge = (estado: string) => {
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
+
+  const handleIrNuevoProducto = () => {
+    navigate("/taller/registro-productos");
+  };
+
+  const getEstadoBadge = (estado: InventoryStatus) => {
     switch (estado) {
       case "agotado":
         return <Badge variant="destructive">Agotado</Badge>;
@@ -215,13 +250,12 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
     }
   };
 
-  const getTipoMovimientoIcon = (tipo: string) => {
-    return tipo === "entrada" ? (
+  const getTipoMovimientoIcon = (type: InventoryMovement["type"]) =>
+    type === "entrada" ? (
       <TrendingUp className="h-4 w-4 text-green-500" />
     ) : (
       <TrendingDown className="h-4 w-4 text-red-500" />
     );
-  };
 
   const handleAjusteStock = () => {
     if (!itemSeleccionado || !ajusteStock.cantidad || !ajusteStock.motivo) {
@@ -229,29 +263,37 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
       return;
     }
 
-    toast.success(`Stock de ${itemSeleccionado.nombre} ajustado correctamente`);
+    // TODO: aquí iría la llamada al backend para registrar el ajuste
+    toast.success(`Stock de ${itemSeleccionado.name} ajustado correctamente`);
     setMostrarDialogoAjuste(false);
     setAjusteStock({ tipo: "entrada", cantidad: "", motivo: "" });
     setItemSeleccionado(null);
   };
 
-  const itemsFiltrados = inventarioItems.filter(item => {
-    const coincideBusqueda = item.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-                            item.codigo.toLowerCase().includes(busqueda.toLowerCase()) ||
-                            item.marca.toLowerCase().includes(busqueda.toLowerCase());
-    
-    const coincideCategoria = filtroCategoria === "todos" || item.categoria === filtroCategoria;
-    const coincideEstado = filtroEstado === "todos" || item.estado === filtroEstado;
-    
+  const itemsFiltrados = inventoryItems.filter((item) => {
+    const coincideBusqueda =
+      item.name.toLowerCase().includes(busqueda.toLowerCase()) ||
+      item.code.toLowerCase().includes(busqueda.toLowerCase()) ||
+      item.brand.toLowerCase().includes(busqueda.toLowerCase());
+
+    const coincideCategoria =
+      filtroCategoria === "todos" || item.category === filtroCategoria;
+    const coincideEstado =
+      filtroEstado === "todos" || item.status === filtroEstado;
+
     return coincideBusqueda && coincideCategoria && coincideEstado;
   });
 
-  const alertasStock = inventarioItems.filter(item => 
-    item.estado === "agotado" || item.estado === "critico" || item.estado === "bajo_stock"
+  const alertasStock = inventoryItems.filter(
+    (item) =>
+      item.status === "agotado" ||
+      item.status === "critico" ||
+      item.status === "bajo_stock"
   );
 
-  const valorTotalInventario = inventarioItems.reduce((total, item) => 
-    total + (item.stockActual * item.precioCompra), 0
+  const valorTotalInventario = inventoryItems.reduce(
+    (total, item) => total + item.currentStock * item.purchasePrice,
+    0
   );
 
   return (
@@ -259,7 +301,7 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={onRegresar}>
+          <Button variant="ghost" onClick={handleRegresar}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Regresar al Panel
           </Button>
@@ -268,11 +310,13 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
               <Package className="h-6 w-6" />
               Gestión de Inventario
             </h1>
-            <p className="text-muted-foreground">Controla tu stock y movimientos de productos</p>
+            <p className="text-muted-foreground">
+              Controla tu stock y movimientos de productos
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => onCambiarVista("registro-productos")}>
+          <Button variant="outline" onClick={handleIrNuevoProducto}>
             <Plus className="h-4 w-4 mr-2" />
             Nuevo Producto
           </Button>
@@ -295,36 +339,40 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
               <Package className="h-8 w-8 text-primary" />
               <div>
                 <p className="text-sm text-muted-foreground">Total Productos</p>
-                <p className="text-2xl font-bold">{inventarioItems.length}</p>
+                <p className="text-2xl font-bold">{inventoryItems.length}</p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
               <AlertTriangle className="h-8 w-8 text-yellow-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Alertas de Stock</p>
-                <p className="text-2xl font-bold text-yellow-600">{alertasStock.length}</p>
+                <p className="text-2xl font-bold text-yellow-600">
+                  {alertasStock.length}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
               <BarChart3 className="h-8 w-8 text-green-500" />
               <div>
                 <p className="text-sm text-muted-foreground">Valor Total</p>
-                <p className="text-2xl font-bold">${valorTotalInventario.toLocaleString()}</p>
+                <p className="text-2xl font-bold">
+                  ${valorTotalInventario.toLocaleString()}
+                </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center gap-2">
@@ -332,7 +380,8 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
               <div>
                 <p className="text-sm text-muted-foreground">Sin Stock</p>
                 <p className="text-2xl font-bold text-red-600">
-                  {inventarioItems.filter(item => item.estado === "agotado").length}
+                  {inventoryItems.filter((item) => item.status === "agotado")
+                    .length}
                 </p>
               </div>
             </div>
@@ -352,17 +401,22 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {alertasStock.slice(0, 6).map((item) => (
-                <div key={item.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                <div
+                  key={item.id}
+                  className="flex items-center gap-3 p-3 bg-white rounded-lg border"
+                >
                   <ImageWithFallback
                     src={item.image}
-                    alt={item.nombre}
+                    alt={item.name}
                     className="w-12 h-12 object-cover rounded"
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-sm">{item.nombre}</p>
-                    <p className="text-xs text-muted-foreground">Stock: {item.stockActual} / Min: {item.stockMinimo}</p>
+                    <p className="font-medium text-sm">{item.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Stock: {item.currentStock} / Min: {item.minStock}
+                    </p>
                   </div>
-                  {getEstadoBadge(item.estado)}
+                  {getEstadoBadge(item.status)}
                 </div>
               ))}
             </div>
@@ -393,7 +447,10 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
                     />
                   </div>
                 </div>
-                <Select value={filtroCategoria} onValueChange={setFiltroCategoria}>
+                <Select
+                  value={filtroCategoria}
+                  onValueChange={setFiltroCategoria}
+                >
                   <SelectTrigger className="w-full md:w-48">
                     <SelectValue placeholder="Categoría" />
                   </SelectTrigger>
@@ -445,37 +502,41 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
                         <div className="flex items-center gap-3">
                           <ImageWithFallback
                             src={item.image}
-                            alt={item.nombre}
+                            alt={item.name}
                             className="w-10 h-10 object-cover rounded"
                           />
                           <div>
-                            <p className="font-medium">{item.nombre}</p>
-                            <p className="text-sm text-muted-foreground">{item.marca}</p>
+                            <p className="font-medium">{item.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {item.brand}
+                            </p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="font-mono">{item.codigo}</TableCell>
-                      <TableCell className="capitalize">{item.categoria}</TableCell>
+                      <TableCell className="font-mono">{item.code}</TableCell>
+                      <TableCell className="capitalize">
+                        {item.category}
+                      </TableCell>
                       <TableCell>
                         <div className="text-center">
-                          <p className="font-bold">{item.stockActual}</p>
+                          <p className="font-bold">{item.currentStock}</p>
                           <p className="text-xs text-muted-foreground">
-                            Min: {item.stockMinimo} | Max: {item.stockMaximo}
+                            Min: {item.minStock} | Max: {item.maxStock}
                           </p>
                         </div>
                       </TableCell>
-                      <TableCell>{item.ubicacion}</TableCell>
+                      <TableCell>{item.location}</TableCell>
                       <TableCell>
                         <div>
-                          <p>Compra: ${item.precioCompra}</p>
-                          <p>Venta: ${item.precioVenta}</p>
+                          <p>Compra: ${item.purchasePrice}</p>
+                          <p>Venta: ${item.price}</p>
                         </div>
                       </TableCell>
-                      <TableCell>{getEstadoBadge(item.estado)}</TableCell>
+                      <TableCell>{getEstadoBadge(item.status)}</TableCell>
                       <TableCell>
                         <div className="flex gap-1">
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="ghost"
                             onClick={() => {
                               setItemSeleccionado(item);
@@ -487,7 +548,11 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
                           <Button size="sm" variant="ghost">
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button size="sm" variant="ghost" className="text-red-500">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500"
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -519,20 +584,22 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {movimientosInventario.map((movimiento) => (
+                  {inventoryMovements.map((movimiento) => (
                     <TableRow key={movimiento.id}>
-                      <TableCell>{movimiento.fecha}</TableCell>
+                      <TableCell>{movimiento.date}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {getTipoMovimientoIcon(movimiento.tipo)}
-                          <span className="capitalize">{movimiento.tipo}</span>
+                          {getTipoMovimientoIcon(movimiento.type)}
+                          <span className="capitalize">{movimiento.type}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{movimiento.producto}</TableCell>
-                      <TableCell>{movimiento.cantidad}</TableCell>
-                      <TableCell>{movimiento.motivo}</TableCell>
-                      <TableCell>{movimiento.usuario}</TableCell>
-                      <TableCell className="font-mono">{movimiento.referencia}</TableCell>
+                      <TableCell>{movimiento.product}</TableCell>
+                      <TableCell>{movimiento.quantity}</TableCell>
+                      <TableCell>{movimiento.reason}</TableCell>
+                      <TableCell>{movimiento.user}</TableCell>
+                      <TableCell className="font-mono">
+                        {movimiento.reference}
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -548,16 +615,20 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
                 <CardTitle>Productos Más Vendidos</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Reportes de productos más vendidos próximamente...</p>
+                <p className="text-muted-foreground">
+                  Reportes de productos más vendidos próximamente...
+                </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Análisis de Stock</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Análisis detallado de rotación de inventario próximamente...</p>
+                <p className="text-muted-foreground">
+                  Análisis detallado de rotación de inventario próximamente...
+                </p>
               </CardContent>
             </Card>
           </div>
@@ -570,13 +641,20 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
           <DialogHeader>
             <DialogTitle>Ajustar Stock</DialogTitle>
             <DialogDescription>
-              {itemSeleccionado?.nombre} - Stock actual: {itemSeleccionado?.stockActual}
+              {itemSeleccionado
+                ? `${itemSeleccionado.name} - Stock actual: ${itemSeleccionado.currentStock}`
+                : ""}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
               <Label>Tipo de movimiento</Label>
-              <Select value={ajusteStock.tipo} onValueChange={(value: any) => setAjusteStock(prev => ({...prev, tipo: value}))}>
+              <Select
+                value={ajusteStock.tipo}
+                onValueChange={(value: "entrada" | "salida") =>
+                  setAjusteStock((prev) => ({ ...prev, tipo: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -591,7 +669,12 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
               <Input
                 type="number"
                 value={ajusteStock.cantidad}
-                onChange={(e) => setAjusteStock(prev => ({...prev, cantidad: e.target.value}))}
+                onChange={(e) =>
+                  setAjusteStock((prev) => ({
+                    ...prev,
+                    cantidad: e.target.value,
+                  }))
+                }
                 placeholder="Ingresa la cantidad"
               />
             </div>
@@ -599,7 +682,12 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
               <Label>Motivo</Label>
               <Input
                 value={ajusteStock.motivo}
-                onChange={(e) => setAjusteStock(prev => ({...prev, motivo: e.target.value}))}
+                onChange={(e) =>
+                  setAjusteStock((prev) => ({
+                    ...prev,
+                    motivo: e.target.value,
+                  }))
+                }
                 placeholder="Motivo del ajuste"
               />
             </div>
@@ -607,9 +695,7 @@ export function InventoryPage({ onRegresar, onCambiarVista }: InventarioTallerPr
               <Button variant="outline" onClick={() => setMostrarDialogoAjuste(false)}>
                 Cancelar
               </Button>
-              <Button onClick={handleAjusteStock}>
-                Confirmar Ajuste
-              </Button>
+              <Button onClick={handleAjusteStock}>Confirmar Ajuste</Button>
             </div>
           </div>
         </DialogContent>

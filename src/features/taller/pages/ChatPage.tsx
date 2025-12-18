@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Button } from "@/shared/ui/button";
@@ -18,13 +19,58 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { toast } from "sonner";
 
-interface ChatTallerProps {
-  taller: any;
-  onRegresar: () => void;
+type MessageStatus = "enviado" | "entregado" | "visto";
+type MessageSender = "taller" | "usuario";
+
+interface ChatMessage {
+  id: string;
+  remitente: MessageSender;
+  mensaje: string;
+  fecha: string;
+  estado: MessageStatus;
 }
+
+interface WorkshopChatInfo {
+  id?: string;
+  nombre: string;
+}
+
+type TallerCercano = {
+  id: string;
+  nombre: string;
+  distancia: string;
+  rating: number;
+  especialidad: string;
+};
+
+const talleresChatMock: TallerCercano[] = [
+  { id: "1", nombre: "AutoMaster", distancia: "2.3 km", rating: 4.8, especialidad: "Motor" },
+  { id: "2", nombre: "TallerPro", distancia: "3.1 km", rating: 4.6, especialidad: "Frenos" },
+  { id: "3", nombre: "MecánicaTotal", distancia: "4.5 km", rating: 4.7, especialidad: "Suspensión" },
+  { id: "4", nombre: "AutoExpress", distancia: "5.2 km", rating: 4.5, especialidad: "Neumáticos" },
+];
+
 //TOOD: API de la IA
-export function ChatTaller({ taller, onRegresar }: ChatTallerProps) {
-  const [mensajes, setMensajes] = useState([
+export function ChatTaller() {
+
+  const navigate = useNavigate();
+
+  const { tallerId } = useParams<{ tallerId: string }>();
+
+  const tallerEncontrado = talleresChatMock.find(
+    (t) => t.id === tallerId
+  );
+
+  const taller: TallerCercano =
+  tallerEncontrado ?? {
+    id: tallerId || "0",
+    nombre: "Taller",
+    distancia: "",
+    rating: 0,
+    especialidad: "",
+  };
+
+  const [mensajes, setMensajes] = useState<ChatMessage[]>([
     {
       id: "1",
       remitente: "taller",
@@ -55,35 +101,39 @@ export function ChatTaller({ taller, onRegresar }: ChatTallerProps) {
     }
   ]);
   
-  const [nuevoMensaje, setNuevoMensaje] = useState("");
-  const [escribiendo, setEscribiendo] = useState(false);
+  const [nuevoMensaje, setNuevoMensaje] = useState<string>("");
+  const [escribiendo, setEscribiendo] = useState<boolean>(false);
+
+  const handleRegresar = () => {
+    navigate("/taller");
+  };
 
   const handleEnviarMensaje = () => {
     if (!nuevoMensaje.trim()) return;
     
-    const mensaje = {
+    const mensaje: ChatMessage = {
       id: Date.now().toString(),
       remitente: "usuario",
       mensaje: nuevoMensaje,
-      fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      fecha: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       estado: "enviado"
     };
     
-    setMensajes([...mensajes, mensaje]);
+    setMensajes((prev) => [...prev, mensaje]);
     setNuevoMensaje("");
     
     // Simular respuesta del taller
     setEscribiendo(true);
     setTimeout(() => {
       setEscribiendo(false);
-      const respuesta = {
+      const respuesta: ChatMessage = {
         id: (Date.now() + 1).toString(),
         remitente: "taller",
         mensaje: "Perfecto, te envío la cotización en un momento. ¿Necesitas instalación también?",
-        fecha: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        fecha: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         estado: "entregado"
       };
-      setMensajes(prev => [...prev, respuesta]);
+      setMensajes((prev) => [...prev, respuesta]);
     }, 2000);
   };
 
@@ -103,7 +153,7 @@ export function ChatTaller({ taller, onRegresar }: ChatTallerProps) {
   return (
     <div className="container mx-auto px-4 py-6 max-w-4xl">
       <div className="flex items-center gap-4 mb-6">
-        <Button variant="outline" onClick={onRegresar}>
+        <Button variant="outline" onClick={handleRegresar}>
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
         </Button>

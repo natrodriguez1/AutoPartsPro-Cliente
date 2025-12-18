@@ -7,81 +7,19 @@ import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
 import { Badge } from "@/shared/ui/badge";
 import { Star, X, Filter } from "lucide-react";
+import type { CheckedState } from "@radix-ui/react-checkbox";
+import { productCategories } from "../data/product.mock";
+import { brands, compatibility } from "../data/brand.mock";
+import { serviceCategories } from "../data/services.mock";
+import type { BaseFilters } from "../types/filters";
 
 interface FilterPanelProps {
-  filters: {
-    categories: string[];
-    priceRange: [number, number];
-    minRating: number;
-    brand: string[];
-    compatibility: string[];
-  };
-  onFiltersChange: (filters: any) => void;
+  filters: BaseFilters;
+  onFiltersChange: (filters: BaseFilters) => void;
   isMobile?: boolean;
   isServiceMode?: boolean;
 }
 
-const productCategories = [
-  { id: "frenos", label: "Frenos y Sistema de Frenado", count: 12 },
-  { id: "motor", label: "Motor y Componentes", count: 18 },
-  { id: "neumaticos", label: "Neumáticos y Llantas", count: 8 },
-  { id: "suspension", label: "Suspensión y Dirección", count: 14 },
-  { id: "electrico", label: "Sistema Eléctrico", count: 10 },
-  { id: "transmision", label: "Transmisión y Embrague", count: 6 },
-  { id: "accesorios", label: "Accesorios y Confort", count: 15 },
-  { id: "herramientas", label: "Herramientas y Equipos", count: 9 }
-];
-
-const serviceCategories = [
-  { id: "mantenimiento", label: "Mantenimiento Preventivo", count: 12 },
-  { id: "diagnostico", label: "Diagnóstico y Revisión", count: 8 },
-  { id: "frenos", label: "Servicios de Frenos", count: 6 },
-  { id: "suspension", label: "Suspensión y Alineación", count: 7 },
-  { id: "transmision", label: "Transmisión y Embrague", count: 4 },
-  { id: "electrico", label: "Sistema Eléctrico", count: 5 },
-  { id: "revision", label: "Inspección Técnica", count: 3 },
-  { id: "climatizacion", label: "Aire Acondicionado", count: 4 },
-  { id: "emergencia", label: "Servicios de Emergencia", count: 2 }
-];
-
-const brands = [
-  { id: "bosch", label: "Bosch", count: 24 },
-  { id: "brembo", label: "Brembo", count: 8 },
-  { id: "castrol", label: "Castrol", count: 6 },
-  { id: "k&n", label: "K&N", count: 4 },
-  { id: "mobil1", label: "Mobil 1", count: 5 },
-  { id: "ngk", label: "NGK", count: 7 },
-  { id: "gates", label: "Gates", count: 3 },
-  { id: "michelin", label: "Michelin", count: 5 },
-  { id: "bridgestone", label: "Bridgestone", count: 4 },
-  { id: "monroe", label: "Monroe", count: 6 },
-  { id: "eibach", label: "Eibach", count: 2 },
-  { id: "philips", label: "Philips", count: 3 },
-  { id: "valeo", label: "Valeo", count: 4 },
-  { id: "weathertech", label: "WeatherTech", count: 2 },
-  { id: "anker", label: "Anker", count: 2 },
-  { id: "truper", label: "Truper", count: 3 },
-  { id: "stanley", label: "Stanley", count: 4 }
-];
-
-const compatibility = [
-  { id: "universal", label: "Universal", count: 35 },
-  { id: "honda", label: "Honda", count: 12 },
-  { id: "toyota", label: "Toyota", count: 15 },
-  { id: "nissan", label: "Nissan", count: 8 },
-  { id: "ford", label: "Ford", count: 6 },
-  { id: "chevrolet", label: "Chevrolet", count: 7 },
-  { id: "bmw", label: "BMW", count: 5 },
-  { id: "audi", label: "Audi", count: 4 },
-  { id: "mercedes", label: "Mercedes-Benz", count: 3 },
-  { id: "volkswagen", label: "Volkswagen", count: 6 },
-  { id: "mazda", label: "Mazda", count: 4 },
-  { id: "fiat", label: "Fiat", count: 3 },
-  { id: "suv", label: "SUV", count: 8 },
-  { id: "pickup", label: "Pickup", count: 6 },
-  { id: "sedan", label: "Sedán", count: 10 },
-  { id: "hatchback", label: "Hatchback", count: 8 }
-];
 
 export function FilterPanel({ filters, onFiltersChange, isMobile = false, isServiceMode = false }: FilterPanelProps) {
   const [expandedSections, setExpandedSections] = useState({
@@ -209,8 +147,8 @@ export function FilterPanel({ filters, onFiltersChange, isMobile = false, isServ
                     <Checkbox
                       id={category.id}
                       checked={filters.categories.includes(category.id)}
-                      onCheckedChange={(checked) => 
-                        handleCategoryChange(category.id, checked as boolean)
+                      onCheckedChange={(checked: CheckedState) =>
+                        handleCategoryChange(category.id, checked === true)
                       }
                     />
                     <Label htmlFor={category.id} className="text-sm cursor-pointer">
@@ -329,7 +267,7 @@ export function FilterPanel({ filters, onFiltersChange, isMobile = false, isServ
                         <Checkbox
                           id={brand.id}
                           checked={filters.brand.includes(brand.id)}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked: CheckedState) => 
                             handleBrandChange(brand.id, checked as boolean)
                           }
                         />
@@ -369,7 +307,7 @@ export function FilterPanel({ filters, onFiltersChange, isMobile = false, isServ
                         <Checkbox
                           id={compat.id}
                           checked={filters.compatibility.includes(compat.id)}
-                          onCheckedChange={(checked) => 
+                          onCheckedChange={(checked: CheckedState) => 
                             handleCompatibilityChange(compat.id, checked as boolean)
                           }
                         />
